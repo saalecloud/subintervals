@@ -2,6 +2,10 @@
 
 Bei jeder Überarbeitung wird die Versionsnummer erhöht (Anzeige im Kopf der Seite und im Browser-Tab).
 
+## v5.9 – 2026-11-22
+- Kopfbereich neu geordnet: Titel mit Version links, runder Design-Knopf und Sync-Knopf rechts, Status als eigene Zeile darunter
+- Datumsangabe über den Karten bricht nicht mehr mitten im Datum um
+
 ## v5.8 – 2026-11-22
 - Umschalter hell/dunkel im Kopf (merkt sich die Wahl, ohne Wahl gilt die Systemeinstellung); Diagramme passen sich an
 

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Subintervals &middot; Trainingscockpit v5.8</title>
+  <title>Subintervals &middot; Trainingscockpit v5.9</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#070a0f">
   <script>
@@ -1379,6 +1379,20 @@
     :root[data-theme="light"] #dashWelcome { background: linear-gradient(135deg, rgba(109,123,255,.10), rgba(14,116,144,.05)); }
     .theme-btn { border: 1px solid var(--line); background: rgba(127,127,127,.12); color: var(--text); border-radius: 99px; padding: 10px 14px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 13px; }
     .top-actions { display: flex; gap: 8px; align-items: center; }
+
+    /* ===== v5.9 KOPFBEREICH ===== */
+    .top-bar { display: grid !important; grid-template-columns: 1fr auto; align-items: center; gap: 12px 12px !important; padding: 14px 16px !important; }
+    .top-bar .brand-title { margin: 0 !important; font-size: 22px !important; min-width: 0; }
+    .top-bar .top-actions { gap: 8px; justify-self: end; }
+    .top-bar .theme-btn { width: 42px; height: 42px; padding: 0 !important; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; border-radius: 50% !important; }
+    .top-bar .sync-btn { height: 42px; padding: 0 18px !important; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; font-size: 14px !important; letter-spacing: .3px !important; }
+    .top-bar .brand-sub { grid-column: 1 / -1; margin: 0 !important; width: 100%; justify-content: flex-start; line-height: 1.35; text-transform: none !important; letter-spacing: .2px !important; font-size: 12.5px !important; padding: 7px 12px !important; border-radius: 12px !important; }
+    .sec-title { flex-wrap: wrap; gap: 2px 14px; align-items: baseline; }
+    .sec-title > span:last-child { white-space: nowrap; font-size: 11.5px !important; }
+    @media (max-width: 420px) {
+      .top-bar .brand-title { font-size: 20px !important; }
+      .top-bar .sync-btn { padding: 0 14px !important; }
+    }
   </style>
 </head>
 <body>
@@ -1391,14 +1405,12 @@
     </div>
     <!-- TOP HEADER -->
     <div class="top-bar">
-      <div>
-        <h1 class="brand-title">Subintervals <span class="ver">v5.8</span></h1>
-        <div class="brand-sub" id="globalStatusText">Bereit · Login unter Tools</div>
-      </div>
+      <h1 class="brand-title">Subintervals <span class="ver">v5.9</span></h1>
       <div class="top-actions">
-        <button type="button" class="theme-btn" id="btnTheme" title="Zwischen hell und dunkel wechseln">Hell</button>
-        <button type="button" class="sync-btn" id="btnGlobalSync">SYNC ALL</button>
+        <button type="button" class="theme-btn" id="btnTheme" title="Zwischen hell und dunkel wechseln" aria-label="Design wechseln">☀</button>
+        <button type="button" class="sync-btn" id="btnGlobalSync" aria-label="Alle Daten synchronisieren"><span class="ico">↻</span> Sync</button>
       </div>
+      <div class="brand-sub" id="globalStatusText">Bereit · Login unter Tools</div>
     </div>
 
     <!-- MAIN 5-TAB NAVIGATION -->
@@ -2511,7 +2523,7 @@
     function applyTheme(t, redraw) {
       document.documentElement.setAttribute("data-theme", t);
       const b = document.getElementById("btnTheme");
-      if (b) b.textContent = t === "light" ? "Dunkel" : "Hell";
+      if (b) b.textContent = t === "light" ? "☾" : "☀"; b.title = t === "light" ? "Zum dunklen Design wechseln" : "Zum hellen Design wechseln";
       const meta = document.querySelector('meta[name="theme-color"]');
       if (meta) meta.setAttribute("content", t === "light" ? "#eef2f7" : "#070a0f");
       if (redraw) {
@@ -2521,7 +2533,7 @@
       }
     }
 
-    const APP_VERSION = "5.8";
+    const APP_VERSION = "5.9";
     const CACHE_KEY = "subintervalsCacheV1";
 
     function renderToday() {
