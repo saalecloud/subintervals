@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Subintervals &middot; Trainingscockpit v5.4</title>
+  <title>Subintervals &middot; Trainingscockpit v5.5</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#070a0f">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <style>
     :root {
       --bg: #070a0f;
@@ -1289,10 +1293,14 @@
 
   <div class="app-shell">
 
+    <div id="updateBanner" style="display:none;padding:10px 14px;background:var(--panel-alt);border:1px solid var(--amber);color:var(--amber);font-size:13px;margin-bottom:10px;text-align:center">
+      <span id="updateText"></span>
+      <button type="button" class="btn ghost sm" id="btnReloadNew" style="margin-left:10px">Jetzt neu laden</button>
+    </div>
     <!-- TOP HEADER -->
     <div class="top-bar">
       <div>
-        <h1 class="brand-title">[ SUBINTERVALS // OS v5.4 ]</h1>
+        <h1 class="brand-title">[ SUBINTERVALS // OS v5.5 ]</h1>
         <div class="brand-sub" id="globalStatusText">BEREIT // ZUGANGSDATEN UNTER TOOLS EINTRAGEN</div>
       </div>
       <button type="button" class="sync-btn" id="btnGlobalSync">SYNC ALL</button>
@@ -1326,6 +1334,7 @@
         <span id="dashDateLabel" style="font-size: 11px; color: var(--amber);">HEUTE</span>
       </h2>
       <div id="dashRecs" class="rec-wrap"></div>
+      <div id="dashToday" style="margin:12px 0"></div>
 
       <div class="kpi-stack">
         <div class="kpi-row">
@@ -1867,7 +1876,10 @@
               </div>
             </div>
           </div>
-          <button type="submit" class="btn cyan" id="btnSaveCfg">Anmelden &amp; synchronisieren</button>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <button type="submit" class="btn cyan" id="btnSaveCfg" style="flex:1;min-width:200px">Anmelden &amp; synchronisieren</button>
+            <button type="button" class="btn ghost" id="btnLogout">Abmelden (Daten löschen)</button>
+          </div>
         </form>
       </section>
 
@@ -2055,6 +2067,12 @@
 
               <div id="bmrReadout" class="chart-readout"></div>
               <button type="button" class="btn cyan" id="btnSaveBody">Körperdaten speichern</button>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+                <button type="button" class="btn ghost" id="btnExportSettings">Einstellungen exportieren</button>
+                <button type="button" class="btn ghost" id="btnImportSettings">Einstellungen importieren</button>
+                <input type="file" id="fileImportSettings" accept="application/json,.json" style="display:none">
+              </div>
+              <div class="tiny">Exportiert Körperdaten und Wellness-Zuordnung. Zugangsdaten sind nicht enthalten.</div>
             </div>
           </section>
 
@@ -2375,6 +2393,79 @@
     // =========================================================================
     // MASTER SYNC
     // =========================================================================
+    const APP_VERSION = "5.5";
+    const CACHE_KEY = "subintervalsCacheV1";
+
+    function renderToday() {
+      const box = document.getElementById("dashToday");
+      if (!box) return;
+      const today = isoDateOffset(0);
+      const list = (APP_STATE.events || []).filter(e =>
+        String(e.start_date_local || "").slice(0, 10) === today &&
+        String(e.category || "").toUpperCase() === "WORKOUT");
+      if (!list.length) { box.innerHTML = ""; return; }
+      box.innerHTML = '<div style="font-size:11px;color:var(--amber);letter-spacing:.08em;margin-bottom:6px">HEUTE GEPLANT</div>' +
+        list.map(e => {
+          const mins = e.moving_time ? Math.round(e.moving_time / 60) + " min" : "";
+          const desc = String(e.description || "").split("\n").slice(0, 8).join("\n");
+          return '<div style="background:var(--panel);border:1px solid var(--border);border-left:3px solid var(--cyan);padding:10px 12px;margin-bottom:8px">' +
+            '<div style="font-weight:600">' + esc(e.name || "Workout") + (e.type ? ' <span style="color:var(--muted,#8aa)">· ' + esc(e.type) + '</span>' : '') + (mins ? ' <span style="color:var(--muted,#8aa)">· ' + mins + '</span>' : '') + '</div>' +
+            (desc ? '<pre style="margin:6px 0 0;white-space:pre-wrap;font:inherit;font-size:12px;opacity:.85">' + esc(desc) + '</pre>' : '') +
+            '</div>';
+        }).join("");
+    }
+
+    function renderAllFromState() {
+      APP_STATE.activities.sort((a, b) => (b.start_date_local || "").localeCompare(a.start_date_local || ""));
+      computeVo2MaxSeries();
+      resetBmrCache();
+      updateBmrReadout();
+      renderWellFields(APP_STATE.wellness, true);
+      updateDashboard();
+      renderToday();
+      renderCalendarFeed(FEED_RANGE.back, FEED_RANGE.fwd);
+      populateAnalyzeSelector();
+      updateVitalTab();
+    }
+
+    function saveCache() {
+      try {
+        localStorage.setItem(CACHE_KEY, JSON.stringify({
+          t: Date.now(), activities: APP_STATE.activities, events: APP_STATE.events, wellness: APP_STATE.wellness
+        }));
+      } catch {}
+    }
+
+    function loadCache() {
+      try {
+        const c = JSON.parse(localStorage.getItem(CACHE_KEY) || "null");
+        if (!c || !Array.isArray(c.activities)) return null;
+        APP_STATE.activities = c.activities;
+        APP_STATE.events = c.events || [];
+        APP_STATE.wellness = c.wellness || [];
+        return c;
+      } catch { return null; }
+    }
+
+    function friendlyError(err) {
+      const m = String(err && err.message || err);
+      const code = (m.match(/\b(401|403|404|429|5\d\d)\b/) || [])[1];
+      if (code === "401" || code === "403") return { text: "LOGIN UNGÜLTIG // API-KEY UND ATHLETE-ID UNTER LOGIN PRÜFEN", login: true };
+      if (code === "404") return { text: "ATHLETE-ID NICHT GEFUNDEN // BITTE ID PRÜFEN (z. B. i123456)", login: true };
+      if (code === "429") return { text: "ZU VIELE ANFRAGEN // BITTE KURZ WARTEN" };
+      if (code) return { text: "SERVERFEHLER " + code + " // SPÄTER ERNEUT VERSUCHEN" };
+      if (/failed to fetch|networkerror|load failed/i.test(m)) return { text: "KEINE VERBINDUNG // OFFLINE" };
+      return { text: "FEHLER: " + m };
+    }
+
+    function focusLogin() {
+      switchTab("tools");
+      const el = document.getElementById("cfgApiKey");
+      const sec = document.getElementById("toolD");
+      if (sec && sec.scrollIntoView) sec.scrollIntoView({ behavior: "smooth", block: "start" });
+      if (el) el.focus();
+    }
+
     async function syncAllData(oldestDays = -183, newestDays = 14) {
       const statusEl = document.getElementById("globalStatusText");
       statusEl.textContent = "SYNCHRONISIERE MIT INTERVALS.ICU...";
@@ -2413,16 +2504,8 @@
           try { applyAthleteProfile(await profRes.json()); } catch {}
         }
 
-        APP_STATE.activities.sort((a, b) => (b.start_date_local || "").localeCompare(a.start_date_local || ""));
-
-        computeVo2MaxSeries();
-        resetBmrCache();
-        updateBmrReadout();
-        renderWellFields(APP_STATE.wellness, true);
-        updateDashboard();
-        renderCalendarFeed(FEED_RANGE.back, FEED_RANGE.fwd);
-        populateAnalyzeSelector();
-        updateVitalTab();
+        renderAllFromState();
+        saveCache();
 
         let txt = `ONLINE // ${APP_STATE.activities.length} EINHEITEN & ${APP_STATE.events.length} EVENTS`;
         if (warnings.length) {
@@ -2433,8 +2516,18 @@
         }
         statusEl.textContent = txt;
       } catch (err) {
-        statusEl.textContent = "FEHLER: " + err.message;
+        const fe = friendlyError(err);
+        statusEl.textContent = fe.text;
         statusEl.style.color = "var(--red)";
+        if (fe.login) focusLogin();
+        else if (APP_STATE.activities.length === 0) {
+          const c = loadCache();
+          if (c) {
+            renderAllFromState();
+            statusEl.textContent = fe.text + " // CACHE VOM " + new Date(c.t).toLocaleString("de-DE");
+            statusEl.style.color = "var(--amber)";
+          }
+        }
       }
     }
 
@@ -7245,6 +7338,70 @@
       });
 
       document.getElementById("btnGlobalSync").addEventListener("click", () => syncAllData(-183, 14));
+
+      document.getElementById("btnLogout").addEventListener("click", () => {
+        if (!confirm("Abmelden? Key, Athlete-ID und zwischengespeicherte Daten werden aus diesem Browser gelöscht.")) return;
+        try { localStorage.removeItem("apiKey"); localStorage.removeItem("athleteId"); localStorage.removeItem(CACHE_KEY); } catch {}
+        document.getElementById("cfgApiKey").value = "";
+        document.getElementById("cfgAthleteId").value = "";
+        APP_STATE.activities = []; APP_STATE.events = []; APP_STATE.wellness = [];
+        try { renderAllFromState(); } catch {}
+        const st = document.getElementById("globalStatusText");
+        st.textContent = "ABGEMELDET // ZUGANGSDATEN UNTER LOGIN EINTRAGEN";
+        st.style.color = "var(--amber)";
+      });
+
+      document.getElementById("btnExportSettings").addEventListener("click", () => {
+        const out = {};
+        try {
+          for (let i = 0; i < localStorage.length; i++) {
+            const k = localStorage.key(i);
+            if (["apiKey", "athleteId", CACHE_KEY].includes(k)) continue;
+            out[k] = localStorage.getItem(k);
+          }
+        } catch {}
+        const blob = new Blob([JSON.stringify({ app: "subintervals", version: APP_VERSION, settings: out }, null, 2)], { type: "application/json" });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(blob);
+        a.download = "subintervals-einstellungen.json";
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+      });
+      document.getElementById("btnImportSettings").addEventListener("click", () => document.getElementById("fileImportSettings").click());
+      document.getElementById("fileImportSettings").addEventListener("change", async (e) => {
+        const f = e.target.files && e.target.files[0];
+        if (!f) return;
+        try {
+          const j = JSON.parse(await f.text());
+          const set = j && j.settings;
+          if (!set || typeof set !== "object") throw new Error("Ungültige Datei");
+          Object.keys(set).forEach(k => { if (!["apiKey", "athleteId", CACHE_KEY].includes(k)) safeSet(k, String(set[k])); });
+          location.reload();
+        } catch (err) { alert("Import fehlgeschlagen: " + err.message); }
+        e.target.value = "";
+      });
+
+      document.getElementById("btnReloadNew").addEventListener("click", () => location.reload());
+      fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(j => {
+        if (j && j.version && j.version !== APP_VERSION) {
+          document.getElementById("updateText").textContent = "Neue Version v" + j.version + " verfügbar (du nutzt v" + APP_VERSION + ").";
+          document.getElementById("updateBanner").style.display = "block";
+        }
+      }).catch(() => {});
+      if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+        navigator.serviceWorker.register("sw.js").catch(() => {});
+      }
+
+      // Cache sofort anzeigen, dann automatisch synchronisieren (wenn Login vorhanden, ggf. von Firefox eingesetzt)
+      if (loadCache()) {
+        try { renderAllFromState(); } catch {}
+        const st = document.getElementById("globalStatusText");
+        st.textContent = "CACHE // AKTUALISIERE ...";
+        st.style.color = "var(--amber)";
+      }
+      setTimeout(() => {
+        if (getAthleteId() && document.getElementById("cfgApiKey").value.trim()) syncAllData(-183, 14);
+      }, 700);
 
       document.getElementById("btnFeedWeek").addEventListener("click", () => renderCalendarFeed(-7, 7));
       document.getElementById("btnFeed14d").addEventListener("click", () => renderCalendarFeed(-14, 10));
