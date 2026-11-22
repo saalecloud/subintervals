@@ -2,6 +2,13 @@
 
 Bei jeder Überarbeitung wird die Versionsnummer erhöht (Anzeige im Kopf der Seite und im Browser-Tab).
 
+## v5.6 – 2026-11-22
+- Design überarbeitet: ruhigerer Hintergrund, abgerundete Karten, Pill-Navigation (am Handy unten fixiert)
+- Kopf mit Markenname, Versions-Chip und Status-Pille mit Farbpunkt
+- Eingabefelder mit Fokus-Rahmen, einheitliche Knöpfe
+- Willkommenskarte mit Login-Knopf, solange nicht angemeldet
+- Tools durchgehend nummeriert (1–6) in Lesereihenfolge: Login, Workout planen, Korrigieren, Export, Körperdaten, Wellness-Felder; runde Nummern-Badges
+
 ## v5.5 – 2026-11-22
 - Automatische Synchronisierung nach dem Laden, sobald ein Login vorhanden ist (auch von Firefox eingesetzt)
 - Verständliche Fehlermeldungen (Login ungültig, ID nicht gefunden, offline); bei Login-Fehler springt die Seite zum Login

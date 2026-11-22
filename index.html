@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Subintervals &middot; Trainingscockpit v5.5</title>
+  <title>Subintervals &middot; Trainingscockpit v5.6</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#070a0f">
   <link rel="icon" type="image/png" href="icon-192.png">
@@ -1287,6 +1287,62 @@
       .sec-sub { display: none; }
       #toolF .form-grid { grid-template-columns: 1fr; }
     }
+
+    /* ===== v5.6 DESIGN-ÜBERARBEITUNG ===== */
+    .tool-badge { width: 30px !important; height: 30px !important; min-width: 30px; display: inline-flex !important; align-items: center; justify-content: center; border-radius: 50% !important; font-size: 14px !important; font-weight: 800 !important; line-height: 1; padding: 0 !important; }
+    .tool-jump b { width: 20px; height: 20px; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; background: rgba(109,123,255,.25); color: #cfd6ff; font-size: 11px; margin-right: 6px; }
+    #dashWelcome { max-width: none; width: 100%; grid-column: 1 / -1; }
+    #dashRecs:empty { display: none; }
+    :root { --r: 16px; --r-sm: 11px; --surface: #0f1622; --surface-2: #131c2b; --line: #22324a; --accent: #6d7bff; --accent-2: #9a6bff; }
+    body {
+      background-image:
+        radial-gradient(900px 500px at 12% -8%, rgba(109,123,255,.16), transparent 60%),
+        radial-gradient(800px 480px at 100% 0%, rgba(0,229,255,.09), transparent 60%) !important;
+      background-attachment: fixed !important;
+      background-size: auto !important;
+      letter-spacing: .1px;
+    }
+    .top-bar { background: linear-gradient(135deg, #131c2e, #0f1622) !important; border: 1px solid var(--line) !important; border-radius: var(--r) !important; box-shadow: 0 8px 28px rgba(0,0,0,.35) !important; }
+    .brand-title { font-size: 21px !important; font-weight: 700 !important; letter-spacing: -.2px !important; background: none !important; -webkit-text-fill-color: var(--text) !important; color: var(--text) !important; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+    .brand-title .ver { font-size: 11px; font-weight: 600; padding: 3px 9px; border-radius: 99px; color: #cfd6ff; background: rgba(109,123,255,.18); border: 1px solid rgba(109,123,255,.4); -webkit-text-fill-color: #cfd6ff; }
+    .brand-sub { display: inline-flex !important; align-items: center; gap: 8px; margin-top: 8px; padding: 5px 11px; border-radius: 99px; background: rgba(255,255,255,.04); border: 1px solid var(--line); font-size: 11.5px !important; font-weight: 600; letter-spacing: .3px !important; text-transform: uppercase; }
+    .brand-sub::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; box-shadow: 0 0 8px currentColor; flex: none; }
+    .sync-btn { border-radius: 99px !important; padding: 11px 20px !important; font-weight: 700 !important; box-shadow: 0 6px 18px rgba(109,123,255,.35) !important; }
+
+    .nav-bar { background: rgba(15,22,34,.72); border: 1px solid var(--line); border-radius: 99px; padding: 5px; gap: 4px !important; backdrop-filter: blur(10px); position: sticky; top: 8px; z-index: 20; }
+    .nav-tab { border: 0 !important; background: transparent !important; border-radius: 99px !important; padding: 10px 6px !important; color: var(--text-muted) !important; box-shadow: none !important; }
+    .nav-tab .nav-num { display: none !important; }
+    .nav-tab .nav-lbl { font-size: 12.5px !important; font-weight: 700 !important; letter-spacing: .4px !important; }
+    .nav-tab.active { background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important; color: #fff !important; box-shadow: 0 6px 16px rgba(109,123,255,.35) !important; }
+
+    .panel { background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 6px 2px !important; }
+    .sec-title { font-size: 19px !important; font-weight: 700 !important; letter-spacing: -.2px !important; text-transform: none !important; border: 0 !important; padding: 4px 4px 8px !important; }
+    .kpi-row, .tool-sec, .m-box, .kpi-card, .wo-block, .compliance-box, .resched-box, .edit-box {
+      background: linear-gradient(180deg, var(--surface-2), var(--surface)) !important;
+      border: 1px solid var(--line) !important; border-radius: var(--r) !important;
+      box-shadow: 0 10px 26px rgba(0,0,0,.28) !important;
+    }
+    .kpi-head .kpi-label, .tool-title { font-size: 12.5px !important; font-weight: 700 !important; letter-spacing: .7px !important; text-transform: uppercase; color: var(--text-muted) !important; }
+    .tool-title { font-size: 16px !important; letter-spacing: -.1px !important; text-transform: none; color: var(--text) !important; }
+    .tool-badge { border-radius: 10px !important; background: linear-gradient(135deg, var(--accent), var(--accent-2)) !important; color: #fff !important; }
+    canvas { border-radius: var(--r-sm) !important; background: #0b111a !important; border: 1px solid rgba(255,255,255,.04); }
+    input, select, textarea { border-radius: var(--r-sm) !important; background: #0b121c !important; border: 1px solid var(--line) !important; transition: border-color .15s, box-shadow .15s; }
+    input:focus, select:focus, textarea:focus { outline: none !important; border-color: var(--accent) !important; box-shadow: 0 0 0 3px rgba(109,123,255,.25) !important; }
+    .btn { border-radius: 99px !important; font-weight: 700 !important; transition: transform .1s, filter .15s; }
+    .btn:hover { filter: brightness(1.12); }
+    .btn.cyan { background: linear-gradient(135deg, rgba(0,229,255,.18), rgba(109,123,255,.22)) !important; border-color: rgba(0,229,255,.5) !important; }
+    .tool-jump { border-radius: 99px !important; }
+    .status-banner { border-radius: var(--r-sm) !important; }
+
+    #dashWelcome { display: none; padding: 18px; margin: 4px 0 12px; border-radius: var(--r); border: 1px solid rgba(109,123,255,.45); background: linear-gradient(135deg, rgba(109,123,255,.16), rgba(0,229,255,.06)); }
+    #dashWelcome b { font-size: 17px; display: block; margin-bottom: 4px; }
+    #dashWelcome span { color: var(--text-muted); font-size: 13.5px; }
+    #dashWelcome .btn { margin-top: 12px; }
+
+    @media (max-width: 799px) {
+      body { padding: 10px 10px 92px !important; }
+      .nav-bar { position: fixed !important; left: 10px; right: 10px; top: auto !important; bottom: calc(10px + env(safe-area-inset-bottom)); max-width: 680px; margin: 0 auto; box-shadow: 0 12px 34px rgba(0,0,0,.55); background: rgba(15,22,34,.92); }
+    }
   </style>
 </head>
 <body>
@@ -1300,8 +1356,8 @@
     <!-- TOP HEADER -->
     <div class="top-bar">
       <div>
-        <h1 class="brand-title">[ SUBINTERVALS // OS v5.5 ]</h1>
-        <div class="brand-sub" id="globalStatusText">BEREIT // ZUGANGSDATEN UNTER TOOLS EINTRAGEN</div>
+        <h1 class="brand-title">Subintervals <span class="ver">v5.6</span></h1>
+        <div class="brand-sub" id="globalStatusText">Bereit · Login unter Tools</div>
       </div>
       <button type="button" class="sync-btn" id="btnGlobalSync">SYNC ALL</button>
     </div>
@@ -1333,6 +1389,7 @@
         <span>Leistungsstatus, VO2max &amp; Schlaf</span>
         <span id="dashDateLabel" style="font-size: 11px; color: var(--amber);">HEUTE</span>
       </h2>
+      <div id="dashWelcome"><b>Willkommen bei Subintervals</b><span>Melde dich mit deiner Intervals.icu Athlete-ID und dem API-Key an, um Training, Schlaf und Fitness zu sehen.</span><br><button type="button" class="btn cyan" id="btnWelcomeLogin">Zum Login</button></div>
       <div id="dashRecs" class="rec-wrap"></div>
       <div id="dashToday" style="margin:12px 0"></div>
 
@@ -1845,18 +1902,18 @@
       </h2>
 
       <nav class="tool-nav" aria-label="Schnellsprung">
-        <button type="button" class="tool-jump" data-jump="toolD"><b>D</b> Zugang</button>
-        <button type="button" class="tool-jump" data-jump="toolA"><b>A</b> Korrigieren</button>
-        <button type="button" class="tool-jump" data-jump="toolB"><b>B</b> Export</button>
-        <button type="button" class="tool-jump" data-jump="toolC"><b>C</b> Workout planen</button>
-        <button type="button" class="tool-jump" data-jump="toolE"><b>E</b> Körperdaten</button>
-        <button type="button" class="tool-jump" data-jump="toolF"><b>F</b> Wellness-Felder</button>
+        <button type="button" class="tool-jump" data-jump="toolD"><b>1</b> Login</button>
+        <button type="button" class="tool-jump" data-jump="toolC"><b>2</b> Workout planen</button>
+        <button type="button" class="tool-jump" data-jump="toolA"><b>3</b> Korrigieren</button>
+        <button type="button" class="tool-jump" data-jump="toolB"><b>4</b> Export</button>
+        <button type="button" class="tool-jump" data-jump="toolE"><b>5</b> Körperdaten</button>
+        <button type="button" class="tool-jump" data-jump="toolF"><b>6</b> Wellness-Felder</button>
       </nav>
 
       <!-- ZUGANG / LOGIN (ganz oben) -->
       <section class="tool-sec login-sec" id="toolD" style="margin-bottom:20px">
         <header class="tool-head">
-          <span class="tool-badge">D</span>
+          <span class="tool-badge">1</span>
           <div>
             <h3 class="tool-title">Login · Intervals.icu</h3>
             <p class="tool-desc">Athlete-ID und API-Key. Beides wird nur in diesem Browser gespeichert.</p>
@@ -1889,81 +1946,10 @@
         <div class="tools-col">
           <div class="tools-group-title">Aktionen</div>
 
-          <!-- 5A: DIREKT-KORREKTUR -->
-          <section class="tool-sec" id="toolA">
-            <header class="tool-head">
-              <span class="tool-badge">A</span>
-              <div>
-                <h3 class="tool-title">Aktivität korrigieren</h3>
-                <p class="tool-desc">Überschreibt Trainingslast (TSS), Kalorien und Puls-Wertung einer bestehenden Aktivität. GPS-Spur, Höhenprofil und Rohdaten bleiben erhalten, leere Felder werden nicht verändert.</p>
-              </div>
-            </header>
-            <div class="tool-body">
-              <div class="form-grid cols-2">
-                <div>
-                  <label for="patchId">Aktivitäts-ID</label>
-                  <input type="text" id="patchId" placeholder="z. B. i197649933">
-                </div>
-                <div>
-                  <label for="patchName">Bezeichnung</label>
-                  <input type="text" id="patchName" placeholder="optional">
-                </div>
-                <div>
-                  <label for="patchTss">Neuer Load (TSS)</label>
-                  <input type="number" id="patchTss" placeholder="optional">
-                </div>
-                <div>
-                  <label for="patchKcal">Neue Kalorien (kcal)</label>
-                  <input type="number" id="patchKcal" placeholder="optional">
-                </div>
-              </div>
-              <div class="checkbox-line">
-                <input type="checkbox" id="patchIgnoreHr">
-                <span>Fehlerhafte Herzfrequenz ignorieren (<code>icu_ignore_hr = true</code>)</span>
-              </div>
-              <button type="button" class="btn amber" id="btnExecPatch">Korrektur an Intervals.icu senden (PUT)</button>
-              <div id="patchBanner" class="status-banner"></div>
-            </div>
-          </section>
-
-          <!-- 5B: DATEN-EXPORT -->
-          <section class="tool-sec" id="toolB">
-            <header class="tool-head">
-              <span class="tool-badge">B</span>
-              <div>
-                <h3 class="tool-title">Daten-Export</h3>
-                <p class="tool-desc">Kopiert alle Einheiten und Vitaldaten des gewählten Zeitraums als JSON in die Zwischenablage, zum Beispiel als Backup.</p>
-              </div>
-            </header>
-            <div class="tool-body">
-              <div>
-                <label for="exportTimeRange">Zeitraum</label>
-                <select id="exportTimeRange">
-                  <option value="7">Letzte 1 Woche</option>
-                  <option value="14">Letzte 2 Wochen</option>
-                  <option value="30" selected>Letzter 1 Monat</option>
-                  <option value="90">Letzte 3 Monate</option>
-                  <option value="180">Letzte 6 Monate</option>
-                </select>
-              </div>
-              <button type="button" class="btn cyan" id="btnDownloadBackupJson">In Zwischenablage kopieren</button>
-              <div id="exportBanner" class="status-banner"></div>
-              <div id="exportCopyBox" style="display:none; flex-direction:column; gap:10px;">
-                <div class="tool-subtitle">Einzeln kopieren</div>
-                <div class="grid-3">
-                  <button type="button" class="btn cyan sm" id="btnCopyExportAll">Alles</button>
-                  <button type="button" class="btn cyan sm" id="btnCopyExportAct">Einheiten</button>
-                  <button type="button" class="btn cyan sm" id="btnCopyExportWell">Wellness</button>
-                </div>
-                <textarea id="exportJsonOutput" readonly style="display:none;"></textarea>
-              </div>
-            </div>
-          </section>
-
           <!-- 5C: WORKOUT PLANER -->
           <section class="tool-sec" id="toolC">
             <header class="tool-head">
-              <span class="tool-badge">C</span>
+              <span class="tool-badge">2</span>
               <div>
                 <h3 class="tool-title">Workout planen &amp; importieren</h3>
                 <p class="tool-desc">Vorlage wählen, Datum setzen, als JSON erzeugen und in den Kalender eintragen. Eigenes Workout-JSON kann direkt eingefügt werden.</p>
@@ -2005,6 +1991,77 @@
               <div id="importBanner" class="status-banner"></div>
             </div>
           </section>
+
+          <!-- 5A: DIREKT-KORREKTUR -->
+          <section class="tool-sec" id="toolA">
+            <header class="tool-head">
+              <span class="tool-badge">3</span>
+              <div>
+                <h3 class="tool-title">Aktivität korrigieren</h3>
+                <p class="tool-desc">Überschreibt Trainingslast (TSS), Kalorien und Puls-Wertung einer bestehenden Aktivität. GPS-Spur, Höhenprofil und Rohdaten bleiben erhalten, leere Felder werden nicht verändert.</p>
+              </div>
+            </header>
+            <div class="tool-body">
+              <div class="form-grid cols-2">
+                <div>
+                  <label for="patchId">Aktivitäts-ID</label>
+                  <input type="text" id="patchId" placeholder="z. B. i197649933">
+                </div>
+                <div>
+                  <label for="patchName">Bezeichnung</label>
+                  <input type="text" id="patchName" placeholder="optional">
+                </div>
+                <div>
+                  <label for="patchTss">Neuer Load (TSS)</label>
+                  <input type="number" id="patchTss" placeholder="optional">
+                </div>
+                <div>
+                  <label for="patchKcal">Neue Kalorien (kcal)</label>
+                  <input type="number" id="patchKcal" placeholder="optional">
+                </div>
+              </div>
+              <div class="checkbox-line">
+                <input type="checkbox" id="patchIgnoreHr">
+                <span>Fehlerhafte Herzfrequenz ignorieren (<code>icu_ignore_hr = true</code>)</span>
+              </div>
+              <button type="button" class="btn amber" id="btnExecPatch">Korrektur an Intervals.icu senden (PUT)</button>
+              <div id="patchBanner" class="status-banner"></div>
+            </div>
+          </section>
+
+          <!-- 5B: DATEN-EXPORT -->
+          <section class="tool-sec" id="toolB">
+            <header class="tool-head">
+              <span class="tool-badge">4</span>
+              <div>
+                <h3 class="tool-title">Daten-Export</h3>
+                <p class="tool-desc">Kopiert alle Einheiten und Vitaldaten des gewählten Zeitraums als JSON in die Zwischenablage, zum Beispiel als Backup.</p>
+              </div>
+            </header>
+            <div class="tool-body">
+              <div>
+                <label for="exportTimeRange">Zeitraum</label>
+                <select id="exportTimeRange">
+                  <option value="7">Letzte 1 Woche</option>
+                  <option value="14">Letzte 2 Wochen</option>
+                  <option value="30" selected>Letzter 1 Monat</option>
+                  <option value="90">Letzte 3 Monate</option>
+                  <option value="180">Letzte 6 Monate</option>
+                </select>
+              </div>
+              <button type="button" class="btn cyan" id="btnDownloadBackupJson">In Zwischenablage kopieren</button>
+              <div id="exportBanner" class="status-banner"></div>
+              <div id="exportCopyBox" style="display:none; flex-direction:column; gap:10px;">
+                <div class="tool-subtitle">Einzeln kopieren</div>
+                <div class="grid-3">
+                  <button type="button" class="btn cyan sm" id="btnCopyExportAll">Alles</button>
+                  <button type="button" class="btn cyan sm" id="btnCopyExportAct">Einheiten</button>
+                  <button type="button" class="btn cyan sm" id="btnCopyExportWell">Wellness</button>
+                </div>
+                <textarea id="exportJsonOutput" readonly style="display:none;"></textarea>
+              </div>
+            </div>
+          </section>
         </div>
 
         <!-- ===== RECHTE SPALTE: EINSTELLUNGEN ===== -->
@@ -2014,7 +2071,7 @@
           <!-- 5E: KOERPERDATEN / GRUNDUMSATZ -->
           <section class="tool-sec" id="toolE">
             <header class="tool-head">
-              <span class="tool-badge">E</span>
+              <span class="tool-badge">5</span>
               <div>
                 <h3 class="tool-title">Körperdaten &amp; Grundumsatz</h3>
                 <p class="tool-desc">Der Grundumsatz wird automatisch aus Körperdaten und Fitnessdaten ermittelt. Den Alltagsverbrauch (NEAT) schätzt die App aus den Schritten der Wellness-Daten, die Verdauung (TEF) als prozentualen Aufschlag. Alle Werte bleiben in diesem Browser.</p>
@@ -2079,7 +2136,7 @@
           <!-- 5F: ENERGIEDATEN AUS WELLNESS -->
           <section class="tool-sec" id="toolF">
             <header class="tool-head">
-              <span class="tool-badge">F</span>
+              <span class="tool-badge">6</span>
               <div>
                 <h3 class="tool-title">Energiedaten aus Wellness</h3>
                 <p class="tool-desc">Zeigt, welche Felder Intervals.icu in deinen Wellness-Daten liefert. Gibt es einen Tagesverbrauch (Gesamt, Grundumsatz oder Aktiv), ordnest du ihn unten zu. Die Kalorien-Anzeige nutzt dann diese Werte statt der Berechnung.</p>
@@ -2393,7 +2450,7 @@
     // =========================================================================
     // MASTER SYNC
     // =========================================================================
-    const APP_VERSION = "5.5";
+    const APP_VERSION = "5.6";
     const CACHE_KEY = "subintervalsCacheV1";
 
     function renderToday() {
@@ -7381,6 +7438,11 @@
         e.target.value = "";
       });
 
+      document.getElementById("btnWelcomeLogin").addEventListener("click", focusLogin);
+      const updWelcome = () => { document.getElementById("dashWelcome").style.display = (getAthleteId() && document.getElementById("cfgApiKey").value.trim()) ? "none" : "block"; };
+      ["cfgAthleteId", "cfgApiKey"].forEach(id => document.getElementById(id).addEventListener("input", updWelcome));
+      setTimeout(updWelcome, 800);
+      document.getElementById("btnLogout").addEventListener("click", () => setTimeout(updWelcome, 50));
       document.getElementById("btnReloadNew").addEventListener("click", () => location.reload());
       fetch("version.json?t=" + Date.now(), { cache: "no-store" }).then(r => r.ok ? r.json() : null).then(j => {
         if (j && j.version && j.version !== APP_VERSION) {
