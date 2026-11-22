@@ -1,5 +1,5 @@
 // Network-first: immer die neueste Version laden, offline aus dem Cache.
-const C = "subintervals-v5.9";
+const C = "subintervals-v6.0";
 self.addEventListener("install", e => { self.skipWaiting(); });
 self.addEventListener("activate", e => {
   e.waitUntil(caches.keys().then(ks => Promise.all(ks.filter(k => k !== C).map(k => caches.delete(k)))).then(() => self.clients.claim()));

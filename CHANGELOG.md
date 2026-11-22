@@ -2,6 +2,10 @@
 
 Bei jeder Überarbeitung wird die Versionsnummer erhöht (Anzeige im Kopf der Seite und im Browser-Tab).
 
+## v6.0 – 2026-11-22
+- Plan: Workout-Profil neu als farbiges Mini-Diagramm mit Zeitskala (Minuten), Hilfslinien, Watt-/Pace-Beschriftung in den Blöcken und Farblegende; Darstellungsfehler (leere Pillen) behoben
+- Diagramme: Balken mit Farbverlauf statt flacher Farbe
+
 ## v5.9 – 2026-11-22
 - Kopfbereich neu geordnet: Titel mit Version links, runder Design-Knopf und Sync-Knopf rechts, Status als eigene Zeile darunter
 - Datumsangabe über den Karten bricht nicht mehr mitten im Datum um

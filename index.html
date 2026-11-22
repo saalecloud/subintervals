@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Subintervals &middot; Trainingscockpit v5.9</title>
+  <title>Subintervals &middot; Trainingscockpit v6.0</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#070a0f">
   <script>
@@ -922,7 +922,7 @@
     .app-shell { gap: 16px; }
 
     /* Karten */
-    .top-bar, .panel, .kpi-card, .m-box, .wo-block, .compliance-box, .resched-box, .edit-box {
+    .top-bar, .panel, .kpi-card, .m-box, .compliance-box, .resched-box, .edit-box {
       background: var(--surface) !important;
       border: 1px solid var(--border) !important;
       border-radius: var(--radius) !important;
@@ -1325,7 +1325,7 @@
 
     .panel { background: transparent !important; border: 0 !important; box-shadow: none !important; padding: 6px 2px !important; }
     .sec-title { font-size: 19px !important; font-weight: 700 !important; letter-spacing: -.2px !important; text-transform: none !important; border: 0 !important; padding: 4px 4px 8px !important; }
-    .kpi-row, .tool-sec, .m-box, .kpi-card, .wo-block, .compliance-box, .resched-box, .edit-box {
+    .kpi-row, .tool-sec, .m-box, .kpi-card, .compliance-box, .resched-box, .edit-box {
       background: linear-gradient(180deg, var(--surface-2), var(--surface)) !important;
       border: 1px solid var(--line) !important; border-radius: var(--r) !important;
       box-shadow: 0 10px 26px rgba(0,0,0,.28) !important;
@@ -1365,7 +1365,7 @@
     }
     :root[data-theme="light"] .top-bar { background: linear-gradient(135deg, #ffffff, #f1f5fb) !important; box-shadow: 0 8px 24px rgba(30,50,90,.10) !important; }
     :root[data-theme="light"] .kpi-row, :root[data-theme="light"] .tool-sec, :root[data-theme="light"] .m-box,
-    :root[data-theme="light"] .kpi-card, :root[data-theme="light"] .wo-block, :root[data-theme="light"] .compliance-box,
+    :root[data-theme="light"] .kpi-card, :root[data-theme="light"] .compliance-box,
     :root[data-theme="light"] .resched-box, :root[data-theme="light"] .edit-box {
       background: linear-gradient(180deg, #ffffff, #f7f9fc) !important; box-shadow: 0 6px 18px rgba(30,50,90,.08) !important;
     }
@@ -1393,6 +1393,26 @@
       .top-bar .brand-title { font-size: 20px !important; }
       .top-bar .sync-btn { padding: 0 14px !important; }
     }
+
+    /* ===== v6.0 PLAN-PROFIL & DIAGRAMME ===== */
+    .wo-prof { margin: 10px 0 12px; padding: 12px 12px 10px; border: 1px solid var(--line); border-radius: var(--r); background: linear-gradient(180deg, var(--surface-2), var(--surface)); }
+    .wo-prof-chart { position: relative; height: 96px; }
+    .wo-prof-grid { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: space-between; pointer-events: none; }
+    .wo-prof-grid i { display: block; border-top: 1px dashed rgba(148,163,184,.22); }
+    .wo-prof-grid i:last-child { border-top: 1px solid rgba(148,163,184,.35); }
+    .wo-prof-bars { position: absolute; inset: 0; display: flex; align-items: flex-end; gap: 3px; }
+    .wo-seg { position: relative; min-width: 4px; border-radius: 7px 7px 3px 3px; background: linear-gradient(180deg, var(--c), color-mix(in srgb, var(--c) 40%, transparent)); box-shadow: 0 0 14px color-mix(in srgb, var(--c) 35%, transparent), inset 0 1px 0 rgba(255,255,255,.35); display: flex; align-items: flex-start; justify-content: center; overflow: hidden; }
+    .wo-seg-lab { font-size: 10px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,.55); padding-top: 4px; white-space: nowrap; }
+    .wo-prof-axis { position: relative; height: 16px; margin-top: 6px; border-top: 1px solid rgba(148,163,184,.3); font-size: 10px; color: var(--text-muted); }
+    .wo-prof-axis span { position: absolute; top: 3px; transform: translateX(-50%); }
+    .wo-prof-axis span:first-child { transform: none; }
+    .wo-prof-axis span:last-child { transform: translateX(-100%); }
+    .wo-prof-foot { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 4px; font-size: 10.5px; color: var(--text-muted); }
+    .wo-prof-total { font-weight: 700; color: var(--text); }
+    .wo-prof-legend { display: flex; gap: 10px; flex-wrap: wrap; }
+    .wo-prof-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+    .wo-steps-list { border-radius: var(--r-sm) !important; background: transparent !important; border: 1px solid var(--line) !important; }
+    .feed-item.planned { background: linear-gradient(135deg, rgba(34,211,238,.07), transparent 55%), var(--surface) !important; }
   </style>
 </head>
 <body>
@@ -1405,7 +1425,7 @@
     </div>
     <!-- TOP HEADER -->
     <div class="top-bar">
-      <h1 class="brand-title">Subintervals <span class="ver">v5.9</span></h1>
+      <h1 class="brand-title">Subintervals <span class="ver">v6.0</span></h1>
       <div class="top-actions">
         <button type="button" class="theme-btn" id="btnTheme" title="Zwischen hell und dunkel wechseln" aria-label="Design wechseln">☀</button>
         <button type="button" class="sync-btn" id="btnGlobalSync" aria-label="Alle Daten synchronisieren"><span class="ico">↻</span> Sync</button>
@@ -2515,11 +2535,37 @@
         configurable: true, enumerable: d.enumerable,
         get() { return d.get.call(this); },
         set(v) {
-          if (isLight() && typeof v === "string") { const m = LIGHT_MAP[v.toLowerCase()]; if (m) v = m; }
+          if (typeof v === "string") {
+            const k = v.toLowerCase();
+            const m = isLight() ? LIGHT_MAP[k] : (k === "#030508" ? "#0d1524" : null);
+            if (m) v = m;
+          }
           d.set.call(this, v);
         }
       });
     });
+    // Balken in Diagrammen: Akzentfarben als Verlauf zeichnen
+    (function () {
+      const ACC = new Set(["#00e5ff", "#00ff66", "#ffb000", "#ff7700", "#ff3366", "#b866ff", "#0891b2", "#059669", "#d97706", "#ea580c", "#e11d48", "#7c3aed"]);
+      const fsD = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, "fillStyle");
+      const origFill = CanvasRenderingContext2D.prototype.fillRect;
+      CanvasRenderingContext2D.prototype.fillRect = function (x, y, w, h) {
+        const cur = fsD.get.call(this);
+        if (typeof cur === "string" && ACC.has(cur.toLowerCase()) && Math.abs(h) > 6 && Math.abs(w) > 3 && Math.abs(w) < 260) {
+          try {
+            const g = this.createLinearGradient(0, y, 0, y + h);
+            g.addColorStop(0, cur);
+            g.addColorStop(1, cur + "66");
+            fsD.set.call(this, g);
+            origFill.call(this, x, y, w, h);
+            fsD.set.call(this, cur);
+            return;
+          } catch {}
+        }
+        origFill.call(this, x, y, w, h);
+      };
+    })();
+
     function applyTheme(t, redraw) {
       document.documentElement.setAttribute("data-theme", t);
       const b = document.getElementById("btnTheme");
@@ -2533,7 +2579,7 @@
       }
     }
 
-    const APP_VERSION = "5.9";
+    const APP_VERSION = "6.0";
     const CACHE_KEY = "subintervalsCacheV1";
 
     function renderToday() {
@@ -5118,11 +5164,39 @@
           intensity = 62; color = "var(--green)"; tag = "Z2 BASIS";
         }
 
-        blocks.push({ durMin, intensity, color });
+        const tm = text.match(/(\d{2,3}(?:\s?-\s?\d{2,3})?\s?w\b|\d:\d{2}(?:\s?-\s?\d:\d{2})?)/i);
+        blocks.push({ durMin, intensity, color, label: tm ? tm[1].replace(/\s/g, "") : "" });
         steps.push({ tag, text, durMin: Math.round(durMin * 10) / 10, color });
       });
 
       return { blocks, steps, totalMinutes: Math.round(totalMinutes) };
+    }
+
+    function renderWorkoutProfile(parsed) {
+      if (!parsed.blocks.length) return "";
+      const total = parsed.blocks.reduce((a, b) => a + b.durMin, 0) || 1;
+      const segs = parsed.blocks.map(b => {
+        const w = b.durMin / total * 100;
+        const lab = (b.label && w >= 13) ? `<span class="wo-seg-lab">${esc(b.label)}</span>` : "";
+        return `<div class="wo-seg" style="flex:${b.durMin}; --c:${b.color}; height:${Math.max(12, b.intensity)}%;">${lab}</div>`;
+      }).join("");
+      const step = total > 90 ? 30 : total > 45 ? 15 : total > 20 ? 10 : 5;
+      let ticks = "";
+      for (let m = 0; m <= total + 0.01; m += step) {
+        const left = Math.min(100, m / total * 100);
+        ticks += `<span style="left:${left}%">${m}'</span>`;
+      }
+      const used = new Set(parsed.steps.map(x => x.tag));
+      const legend = [["WARMUP", "Warm-up", "#3b82f6"], ["Z2 BASIS", "Basis", "var(--green)"], ["SCHWELLE / HM", "Schwelle", "var(--amber)"], ["VO2MAX", "Hart", "var(--red)"], ["PAUSE", "Pause", "#64748b"], ["INTERVALL", "Intervall", "var(--cyan)"]]
+        .filter(x => used.has(x[0])).map(x => `<span><i style="background:${x[2]}"></i>${x[1]}</span>`).join("");
+      return `<div class="wo-prof">
+        <div class="wo-prof-chart">
+          <div class="wo-prof-grid"><i></i><i></i><i></i></div>
+          <div class="wo-prof-bars">${segs}</div>
+        </div>
+        <div class="wo-prof-axis">${ticks}</div>
+        <div class="wo-prof-foot"><span class="wo-prof-total">${Math.round(total)} Min gesamt</span><span class="wo-prof-legend">${legend}</span></div>
+      </div>`;
     }
 
     function estimateWorkoutTss(ev) {
@@ -5610,12 +5684,7 @@
           const estTss = estimateWorkoutTss(e);
           const timePart = ((e.start_date_local || "").split("T")[1] || "17:30:00").substring(0, 5);
 
-          let vizHtml = "";
-          if (parsed.blocks.length > 0) {
-            vizHtml = `<div class="wo-viz-bar">` + parsed.blocks.map(b =>
-              `<div class="wo-block" style="flex:${b.durMin}; height:${b.intensity}%; background:${b.color};"></div>`
-            ).join("") + `</div>`;
-          }
+          const vizHtml = renderWorkoutProfile(parsed);
 
           let stepsHtml = "";
           if (parsed.steps.length > 0) {
