@@ -1853,22 +1853,22 @@
             <p class="tool-desc">Athlete-ID und API-Key. Beides wird nur in diesem Browser gespeichert.</p>
           </div>
         </header>
-        <div class="tool-body">
+        <form class="tool-body" id="loginForm" method="post" action="#" autocomplete="on">
           <div class="form-grid cols-2">
             <div>
               <label for="cfgAthleteId">Athlete-ID</label>
-              <input type="text" id="cfgAthleteId" value="" placeholder="z. B. i123456" autocomplete="off" autocapitalize="off" spellcheck="false">
+              <input type="text" id="cfgAthleteId" name="username" value="" placeholder="z. B. i123456" autocomplete="username" autocapitalize="off" spellcheck="false">
             </div>
             <div>
               <label for="cfgApiKey">API-Key</label>
               <div style="display:flex;gap:8px;align-items:stretch">
-                <input type="password" id="cfgApiKey" value="" placeholder="API-Key hier eintragen" autocomplete="off" autocapitalize="off" spellcheck="false" style="flex:1;min-width:0">
+                <input type="password" id="cfgApiKey" name="password" value="" placeholder="API-Key hier eintragen" autocomplete="current-password" autocapitalize="off" spellcheck="false" style="flex:1;min-width:0">
                 <button type="button" class="btn ghost sm" id="btnToggleKey" aria-pressed="false" title="API-Key im Klartext anzeigen">Anzeigen</button>
               </div>
             </div>
           </div>
-          <button type="button" class="btn cyan" id="btnSaveCfg">Zugangsdaten speichern &amp; synchronisieren</button>
-        </div>
+          <button type="submit" class="btn cyan" id="btnSaveCfg">Anmelden &amp; synchronisieren</button>
+        </form>
       </section>
 
       <div class="tools-grid">
@@ -7224,8 +7224,8 @@
     // INITIALIZATION
     // =========================================================================
     window.addEventListener("DOMContentLoaded", () => {
-      document.getElementById("cfgAthleteId").value = safeGet("athleteId", "");
-      document.getElementById("cfgApiKey").value = safeGet("apiKey", "");
+      { const v = safeGet("athleteId", ""); if (v) document.getElementById("cfgAthleteId").value = v; }
+      { const v = safeGet("apiKey", ""); if (v) document.getElementById("cfgApiKey").value = v; }
       document.getElementById("cfgHeight").value = bodyVal("bodyHeight");
       document.getElementById("cfgBirth").value = bodyVal("bodyBirth");
       document.getElementById("cfgSex").value = bodyVal("bodySex");
@@ -7365,7 +7365,10 @@
         e.currentTarget.setAttribute("aria-pressed", show ? "true" : "false");
         e.currentTarget.title = show ? "API-Key verbergen" : "API-Key im Klartext anzeigen";
       });
-      document.getElementById("btnSaveCfg").addEventListener("click", () => {
+      document.getElementById("loginForm").addEventListener("submit", (ev) => {
+        ev.preventDefault();
+        const keyInp = document.getElementById("cfgApiKey");
+        if (keyInp.type !== "password") document.getElementById("btnToggleKey").click();
         safeSet("athleteId", getAthleteId());
         safeSet("apiKey", document.getElementById("cfgApiKey").value.trim());
         syncAllData();
