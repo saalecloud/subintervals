@@ -2,6 +2,9 @@
 
 Bei jeder Überarbeitung wird die Versionsnummer erhöht (Anzeige im Kopf der Seite und im Browser-Tab).
 
+## v5.8 – 2026-11-22
+- Umschalter hell/dunkel im Kopf (merkt sich die Wahl, ohne Wahl gilt die Systemeinstellung); Diagramme passen sich an
+
 ## v5.7 – 2026-11-22
 - Navigation bleibt oben im normalen Seitenfluss, kein schwebendes Menü mehr (auch am Handy)
 

@@ -3,9 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Subintervals &middot; Trainingscockpit v5.7</title>
+  <title>Subintervals &middot; Trainingscockpit v5.8</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#070a0f">
+  <script>
+    (function () {
+      var t = null;
+      try { t = localStorage.getItem("theme"); } catch (e) {}
+      if (!t) t = (window.matchMedia && matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", t);
+    })();
+  </script>
   <link rel="icon" type="image/png" href="icon-192.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <style>
@@ -236,7 +244,7 @@
     .m-box .val {
       font-size: 13px;
       font-weight: bold;
-      color: #fff;
+      color: var(--text-strong);
       margin-top: 2px;
     }
 
@@ -259,7 +267,7 @@
     .week-stat .val {
       font-size: 14px;
       font-weight: bold;
-      color: #fff;
+      color: var(--text-strong);
       margin-top: 2px;
     }
     .progress-bar-bg {
@@ -362,7 +370,7 @@
     .feed-title {
       font-size: 14px;
       font-weight: bold;
-      color: #fff;
+      color: var(--text-strong);
     }
     .feed-metrics {
       display: flex;
@@ -604,7 +612,7 @@
     .an-title {
       font-size: 15px;
       font-weight: bold;
-      color: #fff;
+      color: var(--text-strong);
       word-break: break-word;
     }
     .an-sub {
@@ -620,7 +628,7 @@
       min-height: 26px;
     }
     .chart-readout b {
-      color: #fff;
+      color: var(--text-strong);
     }
     .seg-row {
       display: grid;
@@ -697,7 +705,7 @@
       padding-top: 6px;
       line-height: 1.45;
     }
-    .kpi-info b { color: #fff; }
+    .kpi-info b { color: var(--text-strong); }
     .kpi-info .exp { font-size: 10px; color: #6b7c95; margin-top: 2px; }
     .up { color: var(--green); font-weight: bold; }
     .down { color: var(--red); font-weight: bold; }
@@ -725,7 +733,7 @@
       margin-top: 6px;
       color: var(--text-muted);
     }
-    .stage-legend b { color: #fff; }
+    .stage-legend b { color: var(--text-strong); }
 
     /* VORGABEN-EDITOR */
     .edit-box {
@@ -1062,7 +1070,7 @@
        ÜBERARBEITUNG: einheitliche Karten, Werkzeuge in Gruppen, ruhigere Bedienelemente
        Reine Optik. Keine Funktion und keine ID wurde geändert.
        ===================================================================== */
-    :root { --line-soft: rgba(148, 163, 184, 0.14); --canvas-bg: #0c1322; }
+    :root { --line-soft: rgba(148, 163, 184, 0.14); --canvas-bg: #0c1322; --text-strong: #ffffff; }
 
     .sec-sub { font-size: 12px; font-weight: 500; color: var(--text-muted); }
     code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 0.92em; color: var(--cyan); background: rgba(34, 211, 238, 0.08); padding: 1px 5px; border-radius: 5px; }
@@ -1339,6 +1347,38 @@
     #dashWelcome span { color: var(--text-muted); font-size: 13.5px; }
     #dashWelcome .btn { margin-top: 12px; }
 
+
+    /* ===== v5.8 HELLES DESIGN ===== */
+    :root[data-theme="light"] {
+      --bg: #eef2f7; --panel: #ffffff; --panel-alt: #f4f7fb; --border: #d5dde8;
+      --text: #1a2433; --text-muted: #5b6b82; --btn-bg: #e8eef6; --shadow: 4px 4px 0 #cfd8e4;
+      --surface: #ffffff; --surface-2: #f7f9fc; --line: #d5dde8;
+      --line-soft: rgba(30,50,90,.12); --canvas-bg: #f4f7fb; --text-strong: #0f172a;
+      --amber: #c2410c; --cyan: #0e7490; --green: #047857; --red: #be123c; --purple: #6d28d9; --blue: #1d4ed8;
+      color-scheme: light;
+    }
+    :root[data-theme="dark"] { color-scheme: dark; }
+    :root[data-theme="light"] body {
+      background-image:
+        radial-gradient(900px 500px at 12% -8%, rgba(109,123,255,.12), transparent 60%),
+        radial-gradient(800px 480px at 100% 0%, rgba(14,116,144,.07), transparent 60%) !important;
+    }
+    :root[data-theme="light"] .top-bar { background: linear-gradient(135deg, #ffffff, #f1f5fb) !important; box-shadow: 0 8px 24px rgba(30,50,90,.10) !important; }
+    :root[data-theme="light"] .kpi-row, :root[data-theme="light"] .tool-sec, :root[data-theme="light"] .m-box,
+    :root[data-theme="light"] .kpi-card, :root[data-theme="light"] .wo-block, :root[data-theme="light"] .compliance-box,
+    :root[data-theme="light"] .resched-box, :root[data-theme="light"] .edit-box {
+      background: linear-gradient(180deg, #ffffff, #f7f9fc) !important; box-shadow: 0 6px 18px rgba(30,50,90,.08) !important;
+    }
+    :root[data-theme="light"] .nav-bar { background: rgba(255,255,255,.85); }
+    :root[data-theme="light"] canvas { background: #f4f7fb !important; border-color: rgba(0,0,0,.06) !important; }
+    :root[data-theme="light"] input, :root[data-theme="light"] select, :root[data-theme="light"] textarea { background: #f7f9fc !important; color: var(--text) !important; }
+    :root[data-theme="light"] .brand-sub { background: rgba(0,0,0,.04); }
+    :root[data-theme="light"] .brand-title .ver { color: #4338ca; background: rgba(109,123,255,.14); -webkit-text-fill-color: #4338ca; }
+    :root[data-theme="light"] .tool-jump b { color: #4338ca; background: rgba(109,123,255,.16); }
+    :root[data-theme="light"] .btn.cyan { color: #0e7490 !important; }
+    :root[data-theme="light"] #dashWelcome { background: linear-gradient(135deg, rgba(109,123,255,.10), rgba(14,116,144,.05)); }
+    .theme-btn { border: 1px solid var(--line); background: rgba(127,127,127,.12); color: var(--text); border-radius: 99px; padding: 10px 14px; font-weight: 700; cursor: pointer; font-family: inherit; font-size: 13px; }
+    .top-actions { display: flex; gap: 8px; align-items: center; }
   </style>
 </head>
 <body>
@@ -1352,10 +1392,13 @@
     <!-- TOP HEADER -->
     <div class="top-bar">
       <div>
-        <h1 class="brand-title">Subintervals <span class="ver">v5.7</span></h1>
+        <h1 class="brand-title">Subintervals <span class="ver">v5.8</span></h1>
         <div class="brand-sub" id="globalStatusText">Bereit · Login unter Tools</div>
       </div>
-      <button type="button" class="sync-btn" id="btnGlobalSync">SYNC ALL</button>
+      <div class="top-actions">
+        <button type="button" class="theme-btn" id="btnTheme" title="Zwischen hell und dunkel wechseln">Hell</button>
+        <button type="button" class="sync-btn" id="btnGlobalSync">SYNC ALL</button>
+      </div>
     </div>
 
     <!-- MAIN 5-TAB NAVIGATION -->
@@ -1426,7 +1469,7 @@
             </div>
             <div class="kpi-val" id="dashLastVal" style="color: var(--amber);">--</div>
           </div>
-          <div id="dashLastTitle" style="font-size:13px; font-weight:bold; color:#fff; word-break:break-word;"></div>
+          <div id="dashLastTitle" style="font-size:13px; font-weight:bold; color:var(--text-strong); word-break:break-word;"></div>
           <div class="metrics-grid-4 dash-last-grid" id="dashLastGrid"></div>
           <div id="dashLastZones"></div>
           <canvas id="dashLastCompare" style="height:172px;"></canvas>
@@ -1792,7 +1835,7 @@
             <div><span class="dot" style="background: #2ec4a6;"></span>ALLTAG (NEAT)</div>
             <div><span class="dot" style="background: #ff7700;"></span>SPORT NETTO (EAT)</div>
             <div><span class="dot" style="background: #ff6fb5;"></span>VERDAUUNG (TEF, SCHÄTZUNG)</div>
-            <div><span style="display:inline-block; width:14px; border-top:1px dashed #fff; vertical-align:middle; margin-right:4px;"></span>Ø GESAMT</div>
+            <div><span style="display:inline-block; width:14px; border-top:1px dashed var(--text-strong); vertical-align:middle; margin-right:4px;"></span>Ø GESAMT</div>
           </div>
         </div>
 
@@ -2446,7 +2489,39 @@
     // =========================================================================
     // MASTER SYNC
     // =========================================================================
-    const APP_VERSION = "5.7";
+    // ===== Theme (hell/dunkel) =====
+    const LIGHT_MAP = {
+      "#8b9bb4": "#5b6b82", "#142030": "#d9e1ec", "#e6edf3": "#1a2433", "#030508": "#f4f7fb",
+      "#00e5ff": "#0891b2", "#00ff66": "#059669", "#ffb000": "#d97706", "#ff7700": "#ea580c",
+      "#ff3366": "#e11d48", "#b866ff": "#7c3aed", "#ffffff": "#1a2433", "#fff": "#1a2433"
+    };
+    function isLight() { return document.documentElement.getAttribute("data-theme") === "light"; }
+    ["fillStyle", "strokeStyle"].forEach(prop => {
+      const d = Object.getOwnPropertyDescriptor(CanvasRenderingContext2D.prototype, prop);
+      if (!d) return;
+      Object.defineProperty(CanvasRenderingContext2D.prototype, prop, {
+        configurable: true, enumerable: d.enumerable,
+        get() { return d.get.call(this); },
+        set(v) {
+          if (isLight() && typeof v === "string") { const m = LIGHT_MAP[v.toLowerCase()]; if (m) v = m; }
+          d.set.call(this, v);
+        }
+      });
+    });
+    function applyTheme(t, redraw) {
+      document.documentElement.setAttribute("data-theme", t);
+      const b = document.getElementById("btnTheme");
+      if (b) b.textContent = t === "light" ? "Dunkel" : "Hell";
+      const meta = document.querySelector('meta[name="theme-color"]');
+      if (meta) meta.setAttribute("content", t === "light" ? "#eef2f7" : "#070a0f");
+      if (redraw) {
+        const cur = document.querySelector(".nav-tab.active");
+        try { if (APP_STATE.activities.length) renderAllFromState(); } catch {}
+        try { switchTab(cur ? cur.getAttribute("data-tab") : "dash"); } catch {}
+      }
+    }
+
+    const APP_VERSION = "5.8";
     const CACHE_KEY = "subintervalsCacheV1";
 
     function renderToday() {
@@ -5535,7 +5610,7 @@
             stepsHtml = `<div class="wo-steps-list">` + parsed.steps.map(s => `
               <div class="wo-step-item">
                 <span style="color:${s.color}; font-weight:bold;">[${esc(s.tag)}]</span>
-                <span style="flex:1; margin-left:8px; color:#fff;">${esc(s.text)}</span>
+                <span style="flex:1; margin-left:8px; color:var(--text-strong);">${esc(s.text)}</span>
               </div>
             `).join("") + `</div>`;
           }
@@ -7390,6 +7465,12 @@
         btn.addEventListener("click", () => { switchTab(btn.getAttribute("data-tab")); if (btn.getAttribute("data-tab") === "analyze") autoAnalyzeLatest(); });
       });
 
+      applyTheme(document.documentElement.getAttribute("data-theme") || "dark", false);
+      document.getElementById("btnTheme").addEventListener("click", () => {
+        const t = isLight() ? "dark" : "light";
+        safeSet("theme", t);
+        applyTheme(t, true);
+      });
       document.getElementById("btnGlobalSync").addEventListener("click", () => syncAllData(-183, 14));
 
       document.getElementById("btnLogout").addEventListener("click", () => {
