@@ -2,6 +2,9 @@
 
 Bei jeder Überarbeitung wird die Versionsnummer erhöht (Anzeige im Kopf der Seite und im Browser-Tab).
 
+## v5.7 – 2026-11-22
+- Navigation bleibt oben im normalen Seitenfluss, kein schwebendes Menü mehr (auch am Handy)
+
 ## v5.6 – 2026-11-22
 - Design überarbeitet: ruhigerer Hintergrund, abgerundete Karten, Pill-Navigation (am Handy unten fixiert)
 - Kopf mit Markenname, Versions-Chip und Status-Pille mit Farbpunkt
