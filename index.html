@@ -1836,13 +1836,40 @@
       </h2>
 
       <nav class="tool-nav" aria-label="Schnellsprung">
+        <button type="button" class="tool-jump" data-jump="toolD"><b>D</b> Zugang</button>
         <button type="button" class="tool-jump" data-jump="toolA"><b>A</b> Korrigieren</button>
         <button type="button" class="tool-jump" data-jump="toolB"><b>B</b> Export</button>
         <button type="button" class="tool-jump" data-jump="toolC"><b>C</b> Workout planen</button>
-        <button type="button" class="tool-jump" data-jump="toolD"><b>D</b> Zugang</button>
         <button type="button" class="tool-jump" data-jump="toolE"><b>E</b> Körperdaten</button>
         <button type="button" class="tool-jump" data-jump="toolF"><b>F</b> Wellness-Felder</button>
       </nav>
+
+      <!-- ZUGANG / LOGIN (ganz oben) -->
+      <section class="tool-sec login-sec" id="toolD" style="margin-bottom:20px">
+        <header class="tool-head">
+          <span class="tool-badge">D</span>
+          <div>
+            <h3 class="tool-title">Login · Intervals.icu</h3>
+            <p class="tool-desc">Athlete-ID und API-Key. Beides wird nur in diesem Browser gespeichert.</p>
+          </div>
+        </header>
+        <div class="tool-body">
+          <div class="form-grid cols-2">
+            <div>
+              <label for="cfgAthleteId">Athlete-ID</label>
+              <input type="text" id="cfgAthleteId" value="" placeholder="z. B. i123456" autocomplete="off" autocapitalize="off" spellcheck="false">
+            </div>
+            <div>
+              <label for="cfgApiKey">API-Key</label>
+              <div style="display:flex;gap:8px;align-items:stretch">
+                <input type="password" id="cfgApiKey" value="" placeholder="API-Key hier eintragen" autocomplete="off" autocapitalize="off" spellcheck="false" style="flex:1;min-width:0">
+                <button type="button" class="btn ghost sm" id="btnToggleKey" aria-pressed="false" title="API-Key im Klartext anzeigen">Anzeigen</button>
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn cyan" id="btnSaveCfg">Zugangsdaten speichern &amp; synchronisieren</button>
+        </div>
+      </section>
 
       <div class="tools-grid">
 
@@ -1971,30 +1998,6 @@
         <!-- ===== RECHTE SPALTE: EINSTELLUNGEN ===== -->
         <div class="tools-col">
           <div class="tools-group-title">Einstellungen &amp; Daten</div>
-
-          <!-- 5D: API SETUP -->
-          <section class="tool-sec" id="toolD">
-            <header class="tool-head">
-              <span class="tool-badge">D</span>
-              <div>
-                <h3 class="tool-title">Zugang zu Intervals.icu</h3>
-                <p class="tool-desc">Athlete-ID und API-Key. Beides wird nur in diesem Browser gespeichert.</p>
-              </div>
-            </header>
-            <div class="tool-body">
-              <div class="form-grid cols-2">
-                <div>
-                  <label for="cfgAthleteId">Athlete-ID</label>
-                  <input type="text" id="cfgAthleteId" value="" placeholder="z. B. i123456" autocomplete="off">
-                </div>
-                <div>
-                  <label for="cfgApiKey">API-Key</label>
-                  <input type="password" id="cfgApiKey" value="" placeholder="API-Key hier eintragen" autocomplete="off">
-                </div>
-              </div>
-              <button type="button" class="btn cyan" id="btnSaveCfg">Zugangsdaten speichern</button>
-            </div>
-          </section>
 
           <!-- 5E: KOERPERDATEN / GRUNDUMSATZ -->
           <section class="tool-sec" id="toolE">
@@ -7354,6 +7357,14 @@
         renderCalorieOverview();
       });
 
+      document.getElementById("btnToggleKey").addEventListener("click", (e) => {
+        const inp = document.getElementById("cfgApiKey");
+        const show = inp.type === "password";
+        inp.type = show ? "text" : "password";
+        e.currentTarget.textContent = show ? "Verbergen" : "Anzeigen";
+        e.currentTarget.setAttribute("aria-pressed", show ? "true" : "false");
+        e.currentTarget.title = show ? "API-Key verbergen" : "API-Key im Klartext anzeigen";
+      });
       document.getElementById("btnSaveCfg").addEventListener("click", () => {
         safeSet("athleteId", getAthleteId());
         safeSet("apiKey", document.getElementById("cfgApiKey").value.trim());
