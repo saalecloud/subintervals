@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Subintervals &middot; Trainingscockpit v6.4</title>
+  <title>Subintervals &middot; Trainingscockpit v6.5</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#070a0f">
   <script>
@@ -1422,6 +1422,8 @@
     .ext-table .ext-new { font-weight: 800; color: var(--cyan); }
 
     .sub-head { margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; color: var(--accent, #6d7bff); }
+
+    .btn.danger-btn { background: rgba(225,29,72,.12) !important; border-color: rgba(225,29,72,.55) !important; color: var(--red) !important; }
   </style>
 </head>
 <body>
@@ -1434,7 +1436,7 @@
     </div>
     <!-- TOP HEADER -->
     <div class="top-bar">
-      <h1 class="brand-title">Subintervals <span class="ver">v6.4</span></h1>
+      <h1 class="brand-title">Subintervals <span class="ver">v6.5</span></h1>
       <div class="top-actions">
         <button type="button" class="theme-btn" id="btnTheme" title="Zwischen hell und dunkel wechseln" aria-label="Design wechseln">☀</button>
         <button type="button" class="sync-btn" id="btnGlobalSync" aria-label="Alle Daten synchronisieren"><span class="ico">↻</span> Sync</button>
@@ -1706,6 +1708,12 @@
           </button>
         </div>
       </div>
+
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:2px 0 6px">
+        <button type="button" class="btn danger-btn" id="btnDeleteActivity" style="min-height:42px;font-size:12px;">EINHEIT LOESCHEN</button>
+        <span class="tiny" style="flex:1;min-width:180px">Löscht die gewählte Einheit in Intervals.icu samt GPS- und Pulsdaten. Nicht rückgängig zu machen.</span>
+      </div>
+      <div id="deleteBanner" class="status-banner"></div>
 
       <div id="analyzeHeader" class="an-header hidden"></div>
       <div id="analyzeComplianceBox" class="compliance-box" style="display:none;"></div>
@@ -2641,7 +2649,7 @@
       }
     }
 
-    const APP_VERSION = "6.4";
+    const APP_VERSION = "6.5";
     const CACHE_KEY = "subintervalsCacheV1";
 
     function renderToday() {
@@ -7584,6 +7592,30 @@
       }
     }
 
+    async function deleteSelectedActivity() {
+      const id = document.getElementById("selectActivityAnalyze").value;
+      const a = (APP_STATE.activities || []).find(x => String(x.id) === String(id));
+      if (!id || !a) { showBanner("deleteBanner", "err", "Bitte zuerst eine Einheit wählen."); return; }
+      const km = a.distance ? (a.distance / 1000).toFixed(2).replace(".", ",") + " km" : "";
+      const min = a.moving_time ? Math.round(a.moving_time / 60) + " min" : "";
+      const info = `${String(a.start_date_local || "").slice(0, 10)} · ${a.name || "Einheit"} (${[a.type, km, min].filter(Boolean).join(", ")})`;
+      if (!confirm(`Diese Einheit endgültig in Intervals.icu löschen?\n\n${info}\nID: ${id}\n\nDas ist nicht rückgängig zu machen.`)) return;
+      showBanner("deleteBanner", "", "Lösche ...");
+      try {
+        const res = await fetch(`https://intervals.icu/api/v1/activity/${id}`, { method: "DELETE", headers: { "Authorization": getAuth() } });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        APP_STATE.activities = APP_STATE.activities.filter(x => String(x.id) !== String(id));
+        saveCache();
+        showBanner("deleteBanner", "ok", `&gt;&gt; Gelöscht: ${esc(info)}`);
+        ["analyzeHeader"].forEach(i => { const el = document.getElementById(i); if (el) el.classList.add("hidden"); });
+        try { renderAllFromState(); } catch {}
+        syncAllData();
+      } catch (err) {
+        const fe = friendlyError(err);
+        showBanner("deleteBanner", "err", "Fehler: " + esc(fe.text));
+      }
+    }
+
     async function applyExtend() {
       const r = computeExtend();
       if (!r) { showBanner("extBanner", "err", "Bitte Einheit und Minuten angeben."); return; }
@@ -7934,6 +7966,7 @@
         st.textContent = ok ? ">> JSON in Zwischenablage kopiert!" : ">> Bitte manuell im Feld kopieren.";
       });
 
+      document.getElementById("btnDeleteActivity").addEventListener("click", deleteSelectedActivity);
       document.getElementById("btnSendToPatchTab").addEventListener("click", () => {
         const id = document.getElementById("selectActivityAnalyze").value;
         const act = APP_STATE.activities.find(a => a.id === id);

@@ -2,6 +2,9 @@
 
 Bei jeder Überarbeitung wird die Versionsnummer erhöht (Anzeige im Kopf der Seite und im Browser-Tab).
 
+## v6.5 – 2026-11-25
+- Analyse: Button „Einheit löschen“ für die gewählte Einheit (mit Rückfrage, löscht in Intervals.icu)
+
 ## v6.4 – 2026-11-25
 - Verlängern: Kalorien und Load der Einheit können überschrieben werden (z. B. mit den Garmin-Gesamtkalorien), wenn die Werte in Intervals.icu nicht stimmen
 
