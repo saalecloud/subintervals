@@ -2,6 +2,10 @@
 
 Bei jeder Überarbeitung wird die Versionsnummer erhöht (Anzeige im Kopf der Seite und im Browser-Tab).
 
+## v6.6 – 2026-11-25
+- Plan: Trainingsziele als schmale Zeilen untereinander, jeweils mit Fortschrittsbalken (Skala 0–100 %) und Zielerreichung aus den Läufen, Schlaf-, Puls- und CTL-Daten der letzten 6 Wochen
+- Analyse: Telemetrie neu als gestapelte Spuren (Pace, Leistung, Puls mit Zonenbändern, Höhe) mit Verlaufsflächen, Durchschnittslinien, Kennzahlen-Kacheln und Cursor-Markern
+
 ## v6.5 – 2026-11-25
 - Analyse: Button „Einheit löschen“ für die gewählte Einheit (mit Rückfrage, löscht in Intervals.icu)
 

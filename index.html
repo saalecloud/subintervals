@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Subintervals &middot; Trainingscockpit v6.5</title>
+  <title>Subintervals &middot; Trainingscockpit v6.6</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#070a0f">
   <script>
@@ -1424,6 +1424,31 @@
     .sub-head { margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; color: var(--accent, #6d7bff); }
 
     .btn.danger-btn { background: rgba(225,29,72,.12) !important; border-color: rgba(225,29,72,.55) !important; color: var(--red) !important; }
+
+    /* ===== v6.6 TRAININGSZIELE ===== */
+    .goal-card { padding: 14px 14px 8px !important; }
+    .goal-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+    .goal-basis { font-size: 11px; color: var(--text-muted); }
+    .goal-list { display: flex; flex-direction: column; gap: 8px; margin-top: 10px; }
+    .goal-row { padding: 9px 12px 8px; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(180deg, var(--surface-2), var(--surface)); }
+    .goal-top { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+    .goal-name { font-size: 13.5px; font-weight: 800; color: var(--text); }
+    .goal-target { font-size: 11.5px; color: var(--text-muted); }
+    .goal-meter { position: relative; height: 9px; margin: 7px 0 5px; border-radius: 99px; background: rgba(148,163,184,.18); overflow: hidden; }
+    .goal-meter::after { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0, transparent calc(25% - 1px), rgba(127,140,160,.45) calc(25% - 1px), rgba(127,140,160,.45) 25%); pointer-events: none; }
+    .goal-meter > div { height: 100%; border-radius: 99px; transition: width .4s; }
+    .goal-meter.ok > div { background: linear-gradient(90deg, #059669, #34d399); }
+    .goal-meter.mid > div { background: linear-gradient(90deg, #0891b2, #22d3ee); }
+    .goal-meter.low > div { background: linear-gradient(90deg, #d97706, #fbbf24); }
+    .goal-meter.warn > div { background: linear-gradient(90deg, #ea580c, #f87171); }
+    .goal-foot { display: flex; justify-content: space-between; gap: 10px; font-size: 11.5px; color: var(--text-muted); }
+    .goal-foot b { color: var(--text); font-size: 12.5px; white-space: nowrap; }
+
+    /* ===== v6.6 TELEMETRIE ===== */
+    .s-chips { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 8px; margin-bottom: 10px; }
+    .s-chip { padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(180deg, var(--surface-2), var(--surface)); display: flex; flex-direction: column; gap: 2px; }
+    .s-chip span { font-size: 10px; letter-spacing: .6px; color: var(--text-muted); font-weight: 700; }
+    .s-chip b { font-size: 15px; font-weight: 800; }
   </style>
 </head>
 <body>
@@ -1436,7 +1461,7 @@
     </div>
     <!-- TOP HEADER -->
     <div class="top-bar">
-      <h1 class="brand-title">Subintervals <span class="ver">v6.5</span></h1>
+      <h1 class="brand-title">Subintervals <span class="ver">v6.6</span></h1>
       <div class="top-actions">
         <button type="button" class="theme-btn" id="btnTheme" title="Zwischen hell und dunkel wechseln" aria-label="Design wechseln">☀</button>
         <button type="button" class="sync-btn" id="btnGlobalSync" aria-label="Alle Daten synchronisieren"><span class="ico">↻</span> Sync</button>
@@ -1773,12 +1798,14 @@
         </h3>
         <div class="canvas-wrap">
           <div id="analyzeChartTitle" style="font-size:10px; color:var(--cyan); margin-bottom:4px;">TELEMETRIE</div>
-          <canvas id="streamCanvas" style="touch-action: pan-y;"></canvas>
+          <div id="streamChips" class="s-chips"></div>
+          <canvas id="streamCanvas" style="touch-action: pan-y; height: 430px;"></canvas>
           <div id="streamReadout" class="chart-readout"></div>
           <div class="legend-row" style="margin-top:0;">
-            <div><span class="dot" style="background: var(--red);"></span>PULS (LINKS)</div>
-            <div><span class="dot" style="background: var(--amber);"></span>LEISTUNG (RECHTS)</div>
-            <div><span class="dot" style="background: var(--green);"></span>HOEHENPROFIL</div>
+            <div><span class="dot" style="background: var(--cyan);"></span>PACE</div>
+            <div><span class="dot" style="background: var(--amber);"></span>LEISTUNG</div>
+            <div><span class="dot" style="background: var(--red);"></span>PULS (FARBBÄNDER = ZONEN)</div>
+            <div><span class="dot" style="background: var(--green);"></span>HÖHE</div>
           </div>
         </div>
       </div>
@@ -2649,7 +2676,7 @@
       }
     }
 
-    const APP_VERSION = "6.5";
+    const APP_VERSION = "6.6";
     const CACHE_KEY = "subintervalsCacheV1";
 
     function renderToday() {
@@ -4696,33 +4723,55 @@
     function renderPlanGoals() {
       const box = document.getElementById("planGoals");
       if (!box) return;
-      const fmtP = s => `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}`;
+      const fmtP = sec => `${Math.floor(sec / 60)}:${String(Math.round(sec % 60)).padStart(2, "0")}`;
+      const clamp = v => Math.max(0, Math.min(100, Math.round(v)));
+      const from = shiftDateStr(isoDateOffset(0), -42);
+      const recent = (APP_STATE.activities || []).filter(a => (a.start_date_local || "").slice(0, 10) >= from);
+      const runs = recent.filter(a => sportGroup(a.type) === "run" && a.distance > 0 && a.moving_time > 0)
+        .map(a => ({ a, pace: a.moving_time / (a.distance / 1000) }));
+      const bestRun = minKm => {
+        const l = runs.filter(r => r.a.distance >= minKm * 1000);
+        return l.length ? l.reduce((x, y) => (y.pace < x.pace ? y : x)) : null;
+      };
+      const kmTxt = a => (a.distance / 1000).toFixed(1).replace(".", ",") + " km";
+      const paceGoal = (name, targetSec, minKm, extra) => {
+        const r = bestRun(minKm);
+        if (!r) return { t: name, target: `Ziel ${fmtP(targetSec)} /km`, pct: 0, now: `kein Lauf ab ${minKm} km in 6 Wochen`, extra };
+        return { t: name, target: `Ziel ${fmtP(targetSec)} /km`, pct: clamp(targetSec / r.pace * 100), now: `bester Lauf ab ${minKm} km: ${fmtP(r.pace)} /km (${kmTxt(r.a)})`, extra };
+      };
       const hmSec = 95 * 60, hmKm = 21.0975;
-      const vo2Target = 61;
       const vh = APP_STATE.vo2History || [];
       const vo2Now = vh.length ? vh[vh.length - 1].vo2 : null;
-      const vo2Pct = vo2Now ? Math.min(100, Math.round(vo2Now / vo2Target * 100)) : 0;
+      const vo2Target = 61;
+      const maxHrNow = recent.reduce((m, a) => Math.max(m, a.max_heartrate || 0), 0);
+      const from7 = shiftDateStr(isoDateOffset(0), -7);
+      const sl = (APP_STATE.wellness || []).filter(w => w.id >= from7 && w.sleepSecs > 0).map(w => w.sleepSecs / 3600);
+      const sleepAvg = sl.length ? sl.reduce((x, y) => x + y, 0) / sl.length : null;
       const ramp = DASH_GFX.ramp;
+      let rampGoal;
+      if (ramp === undefined || ramp === null || isNaN(ramp)) rampGoal = { t: "Aufbau", target: "Ziel +3 bis +7 CTL / Woche", pct: 0, now: "keine Ramp Rate" };
+      else if (ramp > 7) rampGoal = { t: "Aufbau", target: "Ziel +3 bis +7 CTL / Woche", pct: 100, now: `aktuell +${Number(ramp).toFixed(1)}: über dem Zielbereich, Umfang nicht weiter steigern`, warn: true };
+      else rampGoal = { t: "Aufbau", target: "Ziel +3 bis +7 CTL / Woche", pct: clamp(ramp / 3 * 100), now: `aktuell ${ramp > 0 ? "+" : ""}${Number(ramp).toFixed(1)} CTL pro Woche` };
       const goals = [
-        { t: "Halbmarathon", v: "1:35:00", s: `Tempo ${fmtP(hmSec / hmKm)} /km` },
-        { t: "VO2max", v: `${vo2Target} ml/kg/min`, s: vo2Now ? `aktuell ${vo2Now.toFixed(1)}, noch ${Math.max(0, vo2Target - vo2Now).toFixed(1)}` : "kein aktueller Wert", pct: vo2Pct },
-        { t: "Schwellentempo", v: "4:27 /km", s: "3 × 3000 m" },
-        { t: "VO2max-Tempo", v: "4:00 /km", s: "6 × 3 min" },
-        { t: "Max. Puls", v: "193 bpm", s: "Zonen 134 / 153 / 165 / 176" },
-        { t: "Schlaf", v: "8 h", s: "pro Nacht" },
-        { t: "Aufbau", v: "3 bis 7 CTL / Woche", s: ramp !== undefined ? `aktuell ${ramp > 0 ? "+" : ""}${Number(ramp).toFixed(1)}` : "Ramp Rate" }
+        { ...paceGoal("Halbmarathon", hmSec / hmKm, 10), target: `Ziel 1:35:00 · ${fmtP(hmSec / hmKm)} /km` },
+        { t: "VO2max", target: `Ziel ${vo2Target} ml/kg/min`, pct: vo2Now ? clamp(vo2Now / vo2Target * 100) : 0, now: vo2Now ? `aktuell ${vo2Now.toFixed(1)}, noch ${Math.max(0, vo2Target - vo2Now).toFixed(1)} bis zum Ziel` : "kein aktueller Wert" },
+        paceGoal("Schwellentempo", 4 * 60 + 27, 6),
+        paceGoal("VO2max-Tempo", 4 * 60, 3),
+        { t: "Max. Puls", target: "Ziel 193 bpm", pct: maxHrNow ? clamp(maxHrNow / 193 * 100) : 0, now: maxHrNow ? `höchster Wert in 6 Wochen: ${maxHrNow} bpm` : "kein Wert in 6 Wochen" },
+        { t: "Schlaf", target: "Ziel 8 h pro Nacht", pct: sleepAvg ? clamp(sleepAvg / 8 * 100) : 0, now: sleepAvg ? `Ø der letzten 7 Nächte: ${Math.floor(sleepAvg)} h ${String(Math.round((sleepAvg % 1) * 60)).padStart(2, "0")} min` : "keine Schlafdaten" },
+        rampGoal
       ];
       box.innerHTML = `
         <div class="goal-card">
-          <div class="rec-kicker">AKTUELLE TRAININGSZIELE</div>
-          <div class="goal-grid">${goals.map(g => `
-            <div class="goal-item">
-              <div class="goal-t">${esc(g.t)}</div>
-              <div class="goal-v">${esc(g.v)}</div>
-              <div class="goal-s">${esc(g.s)}</div>
-              ${g.pct !== undefined ? `<div class="goal-bar"><div style="width:${g.pct}%"></div></div>` : ""}
-            </div>`).join("")}
-          </div>
+          <div class="goal-head"><div class="rec-kicker">AKTUELLE TRAININGSZIELE</div><span class="goal-basis">Bezug: letzte 6 Wochen</span></div>
+          <div class="goal-list">${goals.map(g => {
+            const cls = g.warn ? "warn" : (g.pct >= 90 ? "ok" : g.pct >= 60 ? "mid" : "low");
+            return `<div class="goal-row">
+              <div class="goal-top"><span class="goal-name">${esc(g.t)}</span><span class="goal-target">${esc(g.target)}</span></div>
+              <div class="goal-meter ${cls}"><div style="width:${g.pct}%"></div></div>
+              <div class="goal-foot"><span>${esc(g.now)}</span><b>${g.pct} %</b></div>
+            </div>`;
+          }).join("")}</div>
         </div>`;
     }
 
@@ -6537,10 +6586,11 @@
           }
           return null;
         };
+        const denseVelChart = vel.length ? toDense(time, vel) : speedFromDistance(toDense(time, dist));
         const chartPoints = [];
         for (let k = 0; k < activeIdx.length; k += chartStep) {
           const t = activeIdx[k];
-          chartPoints.push({ sek: k, puls_bpm: nearest(denseHr, t), watt: nearest(denseW, t), hoehe_m: nearest(denseAlt, t) });
+          chartPoints.push({ sek: k, puls_bpm: nearest(denseHr, t), watt: nearest(denseW, t), hoehe_m: nearest(denseAlt, t), vel_ms: nearest(denseVelChart, t) });
         }
 
 
@@ -6650,7 +6700,7 @@
 
         // Bereiche sichtbar machen, bevor gezeichnet wird
         document.getElementById("analyzeChartWrap").style.display = "flex";
-        STREAM_CHART = { title: act.name || actId, points: chartPoints, chartStep };
+        STREAM_CHART = { title: act.name || actId, points: chartPoints, chartStep, isRun: sportGroup(act.type) === "run" };
         drawStreamCanvas();
 
         renderDetailedLaps(act);
@@ -6718,116 +6768,136 @@
 
     function drawStreamCanvas(cursorSec) {
       if (!STREAM_CHART || !STREAM_CHART.points.length) return;
-      const { title, points, chartStep } = STREAM_CHART;
+      const { title, points, chartStep, isRun } = STREAM_CHART;
       const canvas = document.getElementById("streamCanvas");
       document.getElementById("analyzeChartTitle").textContent = String(title).substring(0, 40);
       document.getElementById("analyzeChartPts").textContent = `${points.length} PUNKTE (${chartStep}s)`;
-
       const setup = setupCanvas(canvas);
       if (!setup) return;
       const { ctx, w, h } = setup;
 
-      const hrs = points.map(p => p.puls_bpm).filter(v => v !== null && v > 40);
-      const alts = points.map(p => p.hoehe_m).filter(v => v !== null);
-      const watts = points.map(p => p.watt).filter(v => v !== null && v > 0);
+      // Reihen aufbereiten (3-Punkt-Glättung)
+      const smooth = arr => arr.map((v, i) => {
+        if (v === null) return null;
+        let sum = 0, n = 0;
+        for (let d = -1; d <= 1; d++) { const x = arr[i + d]; if (x !== null && x !== undefined) { sum += x; n++; } }
+        return n ? sum / n : null;
+      });
+      const paceRaw = points.map(p => (p.vel_ms > 0.8 && 1000 / p.vel_ms >= 120 && 1000 / p.vel_ms <= 900) ? 1000 / p.vel_ms : null);
+      const series = {
+        pace: smooth(paceRaw),
+        watt: smooth(points.map(p => (p.watt !== null && p.watt !== undefined && p.watt > 0) ? p.watt : null)),
+        puls_bpm: smooth(points.map(p => (p.puls_bpm !== null && p.puls_bpm !== undefined && p.puls_bpm > 40) ? p.puls_bpm : null)),
+        hoehe_m: points.map(p => (p.hoehe_m !== null && p.hoehe_m !== undefined) ? p.hoehe_m : null)
+      };
+      const cnt = k => series[k].filter(v => v !== null).length;
+      const lanes = [];
+      if (isRun && cnt("pace") > 3) lanes.push({ key: "pace", label: "PACE", color: "#00e5ff", weight: 3, invert: true, fmt: v => fmtPaceSec(v) });
+      if (cnt("watt") > 3) lanes.push({ key: "watt", label: "LEISTUNG", color: "#ffb000", weight: isRun ? 2 : 3, fmt: v => String(Math.round(v)) });
+      if (cnt("puls_bpm") > 3) lanes.push({ key: "puls_bpm", label: "PULS", color: "#ff3366", weight: 3, zones: true, fmt: v => String(Math.round(v)) });
+      if (cnt("hoehe_m") > 3) lanes.push({ key: "hoehe_m", label: "HÖHE", color: "#00ff66", weight: 1.6, fmt: v => Math.round(v) + " m" });
 
-      const padL = hrs.length ? 34 : 8;
-      const padR = watts.length ? 38 : 8;
-      const padT = 10;
-      const padB = 22;
+      const chips = document.getElementById("streamChips");
+      const avgOf = k => { const l = series[k].filter(v => v !== null); return l.length ? l.reduce((x, y) => x + y, 0) / l.length : null; };
+      if (chips) {
+        const c = [];
+        if (isRun && cnt("pace")) c.push(["Ø PACE", fmtPaceSec(avgOf("pace")) + " /km", "var(--cyan)"], ["SCHNELLSTE", fmtPaceSec(Math.min(...series.pace.filter(v => v !== null))) + " /km", "var(--cyan)"]);
+        if (cnt("watt")) c.push(["Ø LEISTUNG", Math.round(avgOf("watt")) + " W", "var(--amber)"]);
+        if (cnt("puls_bpm")) c.push(["Ø PULS", Math.round(avgOf("puls_bpm")) + " bpm", "var(--red)"], ["MAX PULS", Math.round(Math.max(...series.puls_bpm.filter(v => v !== null))) + " bpm", "var(--red)"]);
+        if (cnt("hoehe_m")) {
+          const al = series.hoehe_m.filter(v => v !== null); let up = 0;
+          for (let i = 1; i < al.length; i++) if (al[i] - al[i - 1] > 0.5) up += al[i] - al[i - 1];
+          const actUp = LAST_ANALYSIS && LAST_ANALYSIS.act && LAST_ANALYSIS.act.total_elevation_gain;
+          c.push(["ANSTIEG", Math.round(actUp > 0 ? actUp : up) + " m", "var(--green)"]);
+        }
+        chips.innerHTML = c.map(x => `<div class="s-chip"><span>${x[0]}</span><b style="color:${x[2]}">${x[1]}</b></div>`).join("");
+      }
+      if (!lanes.length) { STREAM_GEOM = null; return; }
+
+      const padL = 46, padR = 10, padT = 8, padB = 22, gap = 10;
       const plotW = w - padL - padR;
-      const plotH = h - padT - padB;
+      const totalW = lanes.reduce((a, l) => a + l.weight, 0);
+      const usable = h - padT - padB - gap * (lanes.length - 1);
+      let yy = padT;
+      lanes.forEach(l => { l.top = yy; l.h = usable * l.weight / totalW; yy += l.h + gap; });
       const xTotal = Math.max(1, points[points.length - 1].sek);
       const xOf = t => padL + (t / xTotal) * plotW;
 
-      const minAlt = alts.length ? Math.min(...alts) - 5 : 0;
-      const maxAlt = alts.length ? Math.max(...alts) + 10 : 200;
-      const minHr = hrs.length ? Math.min(...hrs) - 5 : 70;
-      const maxHr = hrs.length ? Math.max(...hrs) + 5 : 195;
-      const maxW = watts.length ? Math.max(...watts) + 20 : 350;
-
       ctx.fillStyle = "#030508";
       ctx.fillRect(0, 0, w, h);
-      ctx.font = "9px Calibri, Carlito, Arial, sans-serif";
+      ctx.font = "10px Calibri, Carlito, Arial, sans-serif";
 
-      // Raster
-      ctx.strokeStyle = "#142030";
-      ctx.lineWidth = 1;
-      for (let i = 0; i <= 4; i++) {
-        const y = padT + (i / 4) * plotH;
-        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + plotW, y); ctx.stroke();
-      }
+      // Zeitraster
       const tStep = niceStep(xTotal, 7, [60, 120, 300, 600, 900, 1200, 1800, 3600]);
+      ctx.textAlign = "center";
       for (let t = 0; t <= xTotal; t += tStep) {
         const x = xOf(t);
-        ctx.strokeStyle = "#142030";
-        ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + plotH); ctx.stroke();
+        ctx.strokeStyle = "#142030"; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, h - padB); ctx.stroke();
         ctx.fillStyle = "#8b9bb4";
-        ctx.textAlign = "center";
         ctx.fillText(fmtClock(t), x, h - 7);
       }
 
-      // Achsenbeschriftung
-      if (hrs.length) {
-        ctx.fillStyle = "#ff3366";
+      const zoneCols = ["rgba(100,116,139,0.16)", "rgba(0,255,102,0.12)", "rgba(255,176,0,0.12)", "rgba(255,119,0,0.14)", "rgba(255,51,102,0.16)"];
+      const bounds = APP_STATE.hrZoneBounds || DEFAULT_HR_BOUNDS;
+
+      lanes.forEach(l => {
+        const vals = series[l.key].filter(v => v !== null);
+        let mn = Math.min(...vals), mx = Math.max(...vals);
+        const span = (mx - mn) || 1;
+        mn -= span * 0.08; mx += span * 0.08;
+        if (l.key === "watt") mn = Math.max(0, mn);
+        l.mn = mn; l.mx = mx;
+        l.yOf = v => l.invert ? l.top + (v - mn) / (mx - mn) * l.h : l.top + l.h - (v - mn) / (mx - mn) * l.h;
+        // Spurhintergrund
+        ctx.fillStyle = "rgba(127, 140, 160, 0.07)";
+        ctx.fillRect(padL, l.top, plotW, l.h);
+        // Pulszonen als Farbbänder
+        if (l.zones) {
+          let lo = 0;
+          bounds.forEach((hi, i) => {
+            const a1 = Math.max(lo, mn), a2 = Math.min(hi, mx);
+            if (a2 > a1) { ctx.fillStyle = zoneCols[Math.min(i, 4)]; ctx.fillRect(padL, l.yOf(a2), plotW, l.yOf(a1) - l.yOf(a2)); }
+            lo = hi;
+          });
+        }
+        // Skala links
         ctx.textAlign = "right";
-        [minHr, (minHr + maxHr) / 2, maxHr].forEach(v => {
-          const y = padT + plotH - ((v - minHr) / (maxHr - minHr || 1)) * plotH;
-          ctx.fillText(String(Math.round(v)), padL - 4, y + 3);
+        ctx.fillStyle = l.color;
+        [mn + (mx - mn) * 0.08 / 1.16, (mn + mx) / 2, mx - (mx - mn) * 0.08 / 1.16].forEach((v, i) => {
+          const y = l.yOf(v);
+          ctx.strokeStyle = "#142030"; ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + plotW, y); ctx.stroke();
+          ctx.fillText(l.fmt(v), padL - 5, y + 3);
         });
-      }
-      if (watts.length) {
-        ctx.fillStyle = "#ffb000";
-        ctx.textAlign = "left";
-        [0, maxW / 2, maxW].forEach(v => {
-          const y = padT + plotH - (v / maxW) * plotH;
-          ctx.fillText(String(Math.round(v)), padL + plotW + 4, y + 3);
-        });
-      }
-      ctx.textAlign = "left";
-
-      const drawLine = (key, yFn, color, lw, minV) => {
+        // Linie mit Verlaufsfläche
+        const base = l.invert ? l.top : l.top + l.h;
         ctx.beginPath();
-        ctx.strokeStyle = color;
-        ctx.lineWidth = lw;
-        let started = false;
-        for (let i = 0; i < points.length; i++) {
-          const v = points[i][key];
-          if (v === null || v === undefined || v <= minV) continue;
-          const x = xOf(points[i].sek);
-          const y = yFn(v);
-          if (!started) { ctx.moveTo(x, y); started = true; } else ctx.lineTo(x, y);
-        }
-        ctx.stroke();
-      };
-
-      // Hoehenprofil als Flaeche
-      if (alts.length) {
-        const base = padT + plotH;
-        const yA = v => base - ((v - minAlt) / (maxAlt - minAlt || 1)) * plotH * 0.35;
-        ctx.beginPath();
-        let first = true;
-        let lastX = padL;
-        for (let i = 0; i < points.length; i++) {
-          const v = points[i].hoehe_m;
-          if (v === null) continue;
-          const x = xOf(points[i].sek);
-          if (first) { ctx.moveTo(x, base); ctx.lineTo(x, yA(v)); first = false; } else ctx.lineTo(x, yA(v));
+        let started = false, lastX = padL, firstX = padL;
+        series[l.key].forEach((v, i) => {
+          if (v === null) return;
+          const x = xOf(points[i].sek), y = l.yOf(v);
+          if (!started) { ctx.moveTo(x, y); started = true; firstX = x; } else ctx.lineTo(x, y);
           lastX = x;
+        });
+        ctx.strokeStyle = l.color; ctx.lineWidth = l.key === "hoehe_m" ? 1.2 : 1.8; ctx.lineJoin = "round";
+        ctx.stroke();
+        ctx.lineTo(lastX, base); ctx.lineTo(firstX, base); ctx.closePath();
+        const g = ctx.createLinearGradient(0, l.top, 0, l.top + l.h);
+        const c1 = l.color + "66", c0 = l.color + "05";
+        g.addColorStop(l.invert ? 1 : 0, c1); g.addColorStop(l.invert ? 0 : 1, c0);
+        ctx.fillStyle = g; ctx.fill();
+        // Durchschnittslinie
+        if (l.key !== "hoehe_m") {
+          const avg = vals.reduce((x, y) => x + y, 0) / vals.length;
+          ctx.save(); ctx.setLineDash([5, 4]); ctx.strokeStyle = l.color; ctx.globalAlpha = 0.6; ctx.lineWidth = 1;
+          ctx.beginPath(); ctx.moveTo(padL, l.yOf(avg)); ctx.lineTo(padL + plotW, l.yOf(avg)); ctx.stroke(); ctx.restore();
         }
-        ctx.lineTo(lastX, base);
-        ctx.closePath();
-        ctx.fillStyle = "rgba(0, 255, 102, 0.12)";
-        ctx.fill();
-        drawLine("hoehe_m", yA, "rgba(0, 255, 102, 0.55)", 1, -Infinity);
-      }
-
-      if (watts.length) {
-        drawLine("watt", v => padT + plotH - (v / maxW) * plotH, "rgba(255, 176, 0, 0.75)", 1.2, 0);
-      }
-      if (hrs.length) {
-        drawLine("puls_bpm", v => padT + plotH - ((v - minHr) / (maxHr - minHr || 1)) * plotH, "#ff3366", 2, 40);
-      }
+        // Spurname
+        ctx.textAlign = "left"; ctx.fillStyle = l.color; ctx.globalAlpha = 0.9;
+        ctx.font = "bold 9px Calibri, Carlito, Arial, sans-serif";
+        ctx.fillText(l.label + (l === lanes[0] ? "  · gestrichelt = Ø" : ""), padL + 6, l.top + 11);
+        ctx.globalAlpha = 1; ctx.font = "10px Calibri, Carlito, Arial, sans-serif";
+      });
 
       STREAM_GEOM = { padL, plotW, xTotal };
 
@@ -6835,18 +6905,24 @@
       if (cursorSec !== undefined && cursorSec !== null) {
         const t = Math.max(0, Math.min(cursorSec, xTotal));
         const x = xOf(t);
-        ctx.save();
-        ctx.setLineDash([4, 3]);
-        ctx.strokeStyle = "#ffffff";
-        ctx.lineWidth = 1;
-        ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + plotH); ctx.stroke();
-        ctx.restore();
         const idx = Math.min(points.length - 1, Math.max(0, Math.round(t / chartStep)));
-        const p = points[idx];
-        readout.innerHTML =
-          `ZEIT <b>${fmtClock(p.sek)}</b> | PULS <b>${p.puls_bpm !== null && p.puls_bpm !== undefined ? p.puls_bpm : "-"}</b> | ` +
-          `WATT <b>${p.watt !== null && p.watt !== undefined ? p.watt : "-"}</b> | ` +
-          `HOEHE <b>${p.hoehe_m !== null && p.hoehe_m !== undefined ? Math.round(p.hoehe_m) + " m" : "-"}</b>`;
+        ctx.save();
+        ctx.setLineDash([4, 3]); ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, h - padB); ctx.stroke();
+        ctx.restore();
+        const parts = [`ZEIT <b>${fmtClock(points[idx].sek)}</b>`];
+        lanes.forEach(l => {
+          const v = series[l.key][idx];
+          if (v === null || v === undefined) return;
+          ctx.beginPath(); ctx.arc(x, l.yOf(v), 3.5, 0, Math.PI * 2);
+          ctx.fillStyle = l.color; ctx.fill();
+          ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1; ctx.stroke();
+        });
+        if (isRun && series.pace[idx] !== null) parts.push(`PACE <b>${fmtPaceSec(series.pace[idx])}/km</b>`);
+        if (series.watt[idx] !== null) parts.push(`WATT <b>${Math.round(series.watt[idx])}</b>`);
+        if (series.puls_bpm[idx] !== null) parts.push(`PULS <b>${Math.round(series.puls_bpm[idx])}</b>`);
+        if (series.hoehe_m[idx] !== null) parts.push(`HÖHE <b>${Math.round(series.hoehe_m[idx])} m</b>`);
+        readout.innerHTML = parts.join(" | ");
       } else {
         readout.textContent = "Diagramm antippen oder ziehen: Werte zum Zeitpunkt.";
       }
