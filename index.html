@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Subintervals &middot; Trainingscockpit v6.1</title>
+  <title>Subintervals &middot; Trainingscockpit v6.2</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#070a0f">
   <script>
@@ -1420,6 +1420,8 @@
     .ext-table td { padding: 8px; border-bottom: 1px solid var(--line-soft); font-variant-numeric: tabular-nums; }
     .ext-table td:first-child { color: var(--text-muted); }
     .ext-table .ext-new { font-weight: 800; color: var(--cyan); }
+
+    .sub-head { margin-top: 10px; padding-top: 12px; border-top: 1px solid var(--line); font-size: 12px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; color: var(--accent, #6d7bff); }
   </style>
 </head>
 <body>
@@ -1432,7 +1434,7 @@
     </div>
     <!-- TOP HEADER -->
     <div class="top-bar">
-      <h1 class="brand-title">Subintervals <span class="ver">v6.1</span></h1>
+      <h1 class="brand-title">Subintervals <span class="ver">v6.2</span></h1>
       <div class="top-actions">
         <button type="button" class="theme-btn" id="btnTheme" title="Zwischen hell und dunkel wechseln" aria-label="Design wechseln">☀</button>
         <button type="button" class="sync-btn" id="btnGlobalSync" aria-label="Alle Daten synchronisieren"><span class="ico">↻</span> Sync</button>
@@ -1982,11 +1984,10 @@
       <nav class="tool-nav" aria-label="Schnellsprung">
         <button type="button" class="tool-jump" data-jump="toolD"><b>1</b> Login</button>
         <button type="button" class="tool-jump" data-jump="toolC"><b>2</b> Workout planen</button>
-        <button type="button" class="tool-jump" data-jump="toolA"><b>3</b> Korrigieren</button>
-        <button type="button" class="tool-jump" data-jump="toolG"><b>4</b> Verlängern</button>
-        <button type="button" class="tool-jump" data-jump="toolB"><b>5</b> Export</button>
-        <button type="button" class="tool-jump" data-jump="toolE"><b>6</b> Körperdaten</button>
-        <button type="button" class="tool-jump" data-jump="toolF"><b>7</b> Wellness-Felder</button>
+        <button type="button" class="tool-jump" data-jump="toolA"><b>3</b> Einheit anpassen</button>
+        <button type="button" class="tool-jump" data-jump="toolB"><b>4</b> Export</button>
+        <button type="button" class="tool-jump" data-jump="toolE"><b>5</b> Körperdaten</button>
+        <button type="button" class="tool-jump" data-jump="toolF"><b>6</b> Wellness-Felder</button>
       </nav>
 
       <!-- ZUGANG / LOGIN (ganz oben) -->
@@ -2076,14 +2077,52 @@
             <header class="tool-head">
               <span class="tool-badge">3</span>
               <div>
-                <h3 class="tool-title">Aktivität korrigieren</h3>
-                <p class="tool-desc">Überschreibt Trainingslast (TSS), Kalorien und Puls-Wertung einer bestehenden Aktivität. GPS-Spur, Höhenprofil und Rohdaten bleiben erhalten, leere Felder werden nicht verändert.</p>
+                <h3 class="tool-title">Einheit korrigieren &amp; anpassen</h3>
+                <p class="tool-desc">Wähle eine aufgezeichnete Einheit. Du kannst Load, Kalorien und Puls korrigieren oder die Einheit um Minuten verlängern bzw. kürzen.</p>
               </div>
             </header>
             <div class="tool-body">
+              <div>
+                <label for="extActivity">Aufgezeichnete Einheit</label>
+                <select id="extActivity"><option value="">Erst synchronisieren …</option></select>
+              </div>
+
+              <div class="sub-head">A · Verlängern / kürzen</div>
               <div class="form-grid cols-2">
                 <div>
-                  <label for="patchId">Aktivitäts-ID</label>
+                  <label for="extMin">Minuten ergänzen (negativ = kürzen)</label>
+                  <input type="number" id="extMin" value="10" step="1">
+                </div>
+                <div>
+                  <label for="extPace">Tempo der Zusatzminuten (min/km)</label>
+                  <input type="text" id="extPace" placeholder="Ø der Einheit" inputmode="decimal">
+                </div>
+                <div>
+                  <label for="extHr">Puls der Zusatzminuten (bpm)</label>
+                  <input type="number" id="extHr" placeholder="Ø der Einheit">
+                </div>
+                <div>
+                  <label for="extW">Watt der Zusatzminuten</label>
+                  <input type="number" id="extW" placeholder="Ø der Einheit">
+                </div>
+              </div>
+              <div id="extResult"></div>
+              <button type="button" class="btn cyan" id="btnExtCreate">Angepasste Einheit in Intervals.icu anlegen</button>
+              <div class="checkbox-line">
+                <input type="checkbox" id="extDeleteOrig">
+                <span>Original danach löschen (GPS- und Pulsdaten des Originals gehen verloren, nicht rückgängig)</span>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button type="button" class="btn ghost" id="btnExtCopy">Ergebnis kopieren</button>
+                <button type="button" class="btn amber" id="btnExtApply" style="flex:1;min-width:220px">Nur Kalorien &amp; Load im Original ändern</button>
+              </div>
+              <div class="tiny">Distanz und Zeit lassen sich bei aufgezeichneten Dateien nicht im Original überschreiben. „Anlegen“ erstellt deshalb eine neue Einheit mit den berechneten Werten (Name mit Zusatz „angepasst“). Sonst zählt die Einheit doppelt: Original löschen oder in Intervals.icu ausblenden.</div>
+              <div id="extBanner" class="status-banner"></div>
+
+              <div class="sub-head">B · Werte korrigieren</div>
+              <div class="form-grid cols-2">
+                <div>
+                  <label for="patchId">Aktivitäts-ID (wird aus der Auswahl gesetzt)</label>
                   <input type="text" id="patchId" placeholder="z. B. i197649933">
                 </div>
                 <div>
@@ -2108,56 +2147,10 @@
             </div>
           </section>
 
-          <!-- EINHEIT ANPASSEN / VERLAENGERN -->
-          <section class="tool-sec" id="toolG">
-            <header class="tool-head">
-              <span class="tool-badge">4</span>
-              <div>
-                <h3 class="tool-title">Einheit verlängern / kürzen</h3>
-                <p class="tool-desc">Wähle eine aufgezeichnete Einheit und rechne sie mit zusätzlichen (oder weniger) Minuten neu. Die Werte stehen sofort nebeneinander.</p>
-              </div>
-            </header>
-            <div class="tool-body">
-              <div>
-                <label for="extActivity">Aufgezeichnete Einheit</label>
-                <select id="extActivity"><option value="">Erst synchronisieren …</option></select>
-              </div>
-              <div class="form-grid cols-2">
-                <div>
-                  <label for="extMin">Minuten ergänzen (negativ = kürzen)</label>
-                  <input type="number" id="extMin" value="10" step="1">
-                </div>
-                <div>
-                  <label for="extPace">Tempo der Zusatzminuten (min/km)</label>
-                  <input type="text" id="extPace" placeholder="Ø der Einheit" inputmode="decimal">
-                </div>
-                <div>
-                  <label for="extHr">Puls der Zusatzminuten (bpm)</label>
-                  <input type="number" id="extHr" placeholder="Ø der Einheit">
-                </div>
-                <div>
-                  <label for="extW">Watt der Zusatzminuten</label>
-                  <input type="number" id="extW" placeholder="Ø der Einheit">
-                </div>
-              </div>
-              <div id="extResult"></div>
-              <div style="display:flex;gap:10px;flex-wrap:wrap">
-                <button type="button" class="btn ghost" id="btnExtCopy">Ergebnis kopieren</button>
-                <button type="button" class="btn amber" id="btnExtApply" style="flex:1;min-width:220px">Kalorien &amp; Load in Intervals.icu übernehmen</button>
-              </div>
-              <div class="checkbox-line">
-                <input type="checkbox" id="extNote">
-                <span>Notiz „Verlängert um … Min“ an die Beschreibung anhängen</span>
-              </div>
-              <div class="tiny">Distanz und Zeit schreibt Intervals.icu bei aufgezeichneten Dateien nicht zuverlässig über die Schnittstelle: Diese Werte stehen nur zum Kopieren bereit. Übernommen werden Kalorien und Load (TSS).</div>
-              <div id="extBanner" class="status-banner"></div>
-            </div>
-          </section>
-
           <!-- 5B: DATEN-EXPORT -->
           <section class="tool-sec" id="toolB">
             <header class="tool-head">
-              <span class="tool-badge">5</span>
+              <span class="tool-badge">4</span>
               <div>
                 <h3 class="tool-title">Daten-Export</h3>
                 <p class="tool-desc">Kopiert alle Einheiten und Vitaldaten des gewählten Zeitraums als JSON in die Zwischenablage, zum Beispiel als Backup.</p>
@@ -2196,7 +2189,7 @@
           <!-- 5E: KOERPERDATEN / GRUNDUMSATZ -->
           <section class="tool-sec" id="toolE">
             <header class="tool-head">
-              <span class="tool-badge">6</span>
+              <span class="tool-badge">5</span>
               <div>
                 <h3 class="tool-title">Körperdaten &amp; Grundumsatz</h3>
                 <p class="tool-desc">Der Grundumsatz wird automatisch aus Körperdaten und Fitnessdaten ermittelt. Den Alltagsverbrauch (NEAT) schätzt die App aus den Schritten der Wellness-Daten, die Verdauung (TEF) als prozentualen Aufschlag. Alle Werte bleiben in diesem Browser.</p>
@@ -2261,7 +2254,7 @@
           <!-- 5F: ENERGIEDATEN AUS WELLNESS -->
           <section class="tool-sec" id="toolF">
             <header class="tool-head">
-              <span class="tool-badge">7</span>
+              <span class="tool-badge">6</span>
               <div>
                 <h3 class="tool-title">Energiedaten aus Wellness</h3>
                 <p class="tool-desc">Zeigt, welche Felder Intervals.icu in deinen Wellness-Daten liefert. Gibt es einen Tagesverbrauch (Gesamt, Grundumsatz oder Aktiv), ordnest du ihn unten zu. Die Kalorien-Anzeige nutzt dann diese Werte statt der Berechnung.</p>
@@ -2633,7 +2626,7 @@
       }
     }
 
-    const APP_VERSION = "6.1";
+    const APP_VERSION = "6.2";
     const CACHE_KEY = "subintervalsCacheV1";
 
     function renderToday() {
@@ -7422,6 +7415,7 @@
         return `<option value="${esc(a.id)}">${esc(String(a.start_date_local || "").slice(0, 10))} · ${esc(a.type || "")} · ${esc(a.name || "Einheit")}${km ? " · " + km : ""}${min ? " · " + min : ""}</option>`;
       }).join("");
       if (prev && list.some(a => String(a.id) === prev)) sel.value = prev;
+      const pid = document.getElementById("patchId"); if (pid && !pid.value) pid.value = sel.value;
       renderExtend();
     }
     function computeExtend() {
@@ -7500,6 +7494,53 @@
         const ok = document.execCommand("copy"); ta.remove(); return ok;
       } catch { return false; }
     }
+    async function createAdjustedActivity() {
+      const r = computeExtend();
+      if (!r) { showBanner("extBanner", "err", "Bitte Einheit und Minuten angeben."); return; }
+      const a = r.a;
+      const label = r.addMin >= 0 ? `+${r.addMin} Min` : `${r.addMin} Min`;
+      const payload = {
+        name: `${a.name || "Einheit"} (angepasst ${label})`,
+        type: a.type || "Run",
+        start_date_local: a.start_date_local,
+        moving_time: Math.round(r.t1),
+        description: ((a.description || "") + (a.description ? "\n" : "") + `Angepasst aus ${a.id}: ${label}`).trim()
+      };
+      if (r.d1 > 0) payload.distance = Math.round(r.d1);
+      if (r.hr1) payload.average_heartrate = Math.round(r.hr1);
+      if (r.kcal1) payload.calories = r.kcal1;
+      if (r.load1) payload.icu_training_load = r.load1;
+      if (a.trainer) payload.trainer = true;
+      const del = document.getElementById("extDeleteOrig").checked;
+      const sum = Object.entries(payload).map(([k, v]) => `${k}: ${v}`).join("\n");
+      if (!confirm(`Neue Einheit in Intervals.icu anlegen?\n\n${sum}` + (del ? `\n\nDanach wird das Original ${a.id} GELÖSCHT.` : ""))) return;
+      showBanner("extBanner", "", "Lege Einheit an ...");
+      try {
+        const res = await fetch(`https://intervals.icu/api/v1/athlete/${getAthleteId()}/activities/manual`, {
+          method: "POST",
+          headers: { "Authorization": getAuth(), "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        const made = await res.json();
+        const m = Array.isArray(made) ? made[0] : made;
+        const gotKm = m && m.distance ? (m.distance / 1000).toFixed(2).replace(".", ",") + " km" : "–";
+        const gotT = m && m.moving_time ? fmtHMS(m.moving_time) : "–";
+        let msg = `&gt;&gt; ERFOLG: Neue Einheit <b>${esc(m && m.id)}</b> angelegt: ${gotKm}, ${gotT}.`;
+        if (del) {
+          const dr = await fetch(`https://intervals.icu/api/v1/activity/${a.id}`, { method: "DELETE", headers: { "Authorization": getAuth() } });
+          msg += dr.ok ? " Original gelöscht." : ` Original konnte nicht gelöscht werden (HTTP ${dr.status}) – bitte in Intervals.icu von Hand löschen.`;
+        } else {
+          msg += " Das Original bleibt bestehen – bitte löschen oder ausblenden, sonst zählt die Einheit doppelt.";
+        }
+        showBanner("extBanner", "ok", msg);
+        syncAllData();
+      } catch (err) {
+        const fe = friendlyError(err);
+        showBanner("extBanner", "err", "Fehler: " + esc(fe.text));
+      }
+    }
+
     async function applyExtend() {
       const r = computeExtend();
       if (!r) { showBanner("extBanner", "err", "Bitte Einheit und Minuten angeben."); return; }
@@ -7791,6 +7832,7 @@
 
       document.getElementById("extActivity").addEventListener("change", () => {
         ["extPace", "extHr", "extW"].forEach(id => { const el = document.getElementById(id); el.value = ""; el.placeholder = ""; });
+        document.getElementById("patchId").value = document.getElementById("extActivity").value;
         renderExtend();
       });
       ["extMin", "extPace", "extHr", "extW"].forEach(id => document.getElementById(id).addEventListener("input", renderExtend));
@@ -7801,6 +7843,7 @@
         showBanner("extBanner", ok ? "ok" : "err", ok ? "&gt;&gt; Ergebnis kopiert." : "Kopieren nicht möglich – bitte Text von Hand markieren.");
       });
       document.getElementById("btnExtApply").addEventListener("click", applyExtend);
+      document.getElementById("btnExtCreate").addEventListener("click", createAdjustedActivity);
       document.getElementById("btnWelcomeLogin").addEventListener("click", focusLogin);
       const updWelcome = () => { document.getElementById("dashWelcome").style.display = (getAthleteId() && document.getElementById("cfgApiKey").value.trim()) ? "none" : "block"; };
       ["cfgAthleteId", "cfgApiKey"].forEach(id => document.getElementById(id).addEventListener("input", updWelcome));
