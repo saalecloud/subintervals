@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Subintervals &middot; Trainingscockpit v6.3</title>
+  <title>Subintervals &middot; Trainingscockpit v6.4</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#070a0f">
   <script>
@@ -1434,7 +1434,7 @@
     </div>
     <!-- TOP HEADER -->
     <div class="top-bar">
-      <h1 class="brand-title">Subintervals <span class="ver">v6.3</span></h1>
+      <h1 class="brand-title">Subintervals <span class="ver">v6.4</span></h1>
       <div class="top-actions">
         <button type="button" class="theme-btn" id="btnTheme" title="Zwischen hell und dunkel wechseln" aria-label="Design wechseln">☀</button>
         <button type="button" class="sync-btn" id="btnGlobalSync" aria-label="Alle Daten synchronisieren"><span class="ico">↻</span> Sync</button>
@@ -2105,6 +2105,14 @@
                   <label for="extW">Watt der Zusatzminuten</label>
                   <input type="number" id="extW" placeholder="Ø der Einheit">
                 </div>
+                <div>
+                  <label for="extBaseKcal">Kalorien der Einheit (überschreibt Intervals.icu)</label>
+                  <input type="number" id="extBaseKcal" placeholder="z. B. Garmin Gesamtkalorien">
+                </div>
+                <div>
+                  <label for="extBaseLoad">Load der Einheit in TSS (überschreibt Intervals.icu)</label>
+                  <input type="number" id="extBaseLoad" placeholder="optional">
+                </div>
                 <div style="grid-column:1/-1">
                   <label for="extKcalMode">Kalorien der Zusatzminuten</label>
                   <select id="extKcalMode">
@@ -2633,7 +2641,7 @@
       }
     }
 
-    const APP_VERSION = "6.3";
+    const APP_VERSION = "6.4";
     const CACHE_KEY = "subintervalsCacheV1";
 
     function renderToday() {
@@ -7450,7 +7458,9 @@
       if (isNaN(wX)) wX = w0;
       const w1 = w0 ? mix(w0, wX) : 0;
       const ratio = t1 / t0;
-      const kcal0 = a.calories || 0, load0 = a.icu_training_load || 0;
+      const bk = parseFloat((document.getElementById("extBaseKcal") || {}).value);
+      const bl = parseFloat((document.getElementById("extBaseLoad") || {}).value);
+      const kcal0 = bk > 0 ? bk : (a.calories || 0), load0 = bl > 0 ? bl : (a.icu_training_load || 0);
       // Kalorien der Zusatzminuten: proportional (Gerätewert) und Schätzung (ACSM-Laufformel)
       const propKcal = kcal0 * (t1 - t0) / t0;
       let estKcal = null, estPerMin = null;
@@ -7499,6 +7509,10 @@
       ph("extPace", r.pace0 ? "Ø " + formatPace(r.pace0) : "Ø der Einheit");
       ph("extHr", r.hr0 ? "Ø " + Math.round(r.hr0) : "Ø der Einheit");
       ph("extW", r.w0 ? "Ø " + Math.round(r.w0) : "Ø der Einheit");
+      const ia = r.a;
+      const phb = (id, v) => { const el = document.getElementById(id); if (el) el.placeholder = v; };
+      phb("extBaseKcal", ia.calories ? "Intervals.icu: " + ia.calories + " kcal" : "z. B. Garmin Gesamtkalorien");
+      phb("extBaseLoad", ia.icu_training_load ? "Intervals.icu: " + ia.icu_training_load : "optional");
     }
     function extendAsText() {
       const r = computeExtend();
@@ -7860,12 +7874,16 @@
       });
 
       document.getElementById("extActivity").addEventListener("change", () => {
-        ["extPace", "extHr", "extW"].forEach(id => { const el = document.getElementById(id); el.value = ""; el.placeholder = ""; });
+        ["extPace", "extHr", "extW", "extBaseKcal", "extBaseLoad"].forEach(id => { const el = document.getElementById(id); el.value = ""; el.placeholder = ""; });
         document.getElementById("patchId").value = document.getElementById("extActivity").value;
         renderExtend();
       });
       ["extMin", "extPace", "extHr", "extW"].forEach(id => document.getElementById(id).addEventListener("input", renderExtend));
       document.getElementById("extKcalMode").addEventListener("change", renderExtend);
+      ["extBaseKcal", "extBaseLoad"].forEach(id => document.getElementById(id).addEventListener("input", () => {
+        if (id === "extBaseKcal" && document.getElementById(id).value) document.getElementById("extKcalMode").value = "prop";
+        renderExtend();
+      }));
       document.getElementById("btnExtCopy").addEventListener("click", async () => {
         const t = extendAsText();
         if (!t) { showBanner("extBanner", "err", "Nichts zu kopieren."); return; }

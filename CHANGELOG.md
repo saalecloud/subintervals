@@ -2,6 +2,9 @@
 
 Bei jeder Überarbeitung wird die Versionsnummer erhöht (Anzeige im Kopf der Seite und im Browser-Tab).
 
+## v6.4 – 2026-11-25
+- Verlängern: Kalorien und Load der Einheit können überschrieben werden (z. B. mit den Garmin-Gesamtkalorien), wenn die Werte in Intervals.icu nicht stimmen
+
 ## v6.3 – 2026-11-25
 - Verlängern: Kalorien der Zusatzminuten standardmäßig nach Laufformel (Tempo, Gewicht) statt proportional zum Gerätewert; Umschalter und Gegenprobe mit beiden Werten, Warnhinweis bei großer Abweichung
 
