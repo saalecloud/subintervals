@@ -2,6 +2,10 @@
 
 Bei jeder Überarbeitung wird die Versionsnummer erhöht (Anzeige im Kopf der Seite und im Browser-Tab).
 
+## v6.7 – 2026-11-25
+- Dashboard: alle Karten sind antippbar und öffnen eine Detailansicht mit größerem Diagramm, Kennzahlen, Tabelle und Erklärung: Schlaf, Kalorienverbrauch, Letzte Einheiten (Tipp auf eine Zeile öffnet die Voll-Analyse), VO2max, Fitness/Ermüdung/Form (gemeinsame Belastungsansicht), Ramp Rate, Wochenbilanz und Empfehlung heute
+- Zeiträume wählbar (z. B. 7/14/30/90 Tage), Diagramme mit Cursor-Anzeige
+
 ## v6.6 – 2026-11-25
 - Plan: Trainingsziele als schmale Zeilen untereinander, jeweils mit Fortschrittsbalken (Skala 0–100 %) und Zielerreichung aus den Läufen, Schlaf-, Puls- und CTL-Daten der letzten 6 Wochen
 - Analyse: Telemetrie neu als gestapelte Spuren (Pace, Leistung, Puls mit Zonenbändern, Höhe) mit Verlaufsflächen, Durchschnittslinien, Kennzahlen-Kacheln und Cursor-Markern

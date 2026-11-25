@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Subintervals &middot; Trainingscockpit v6.6</title>
+  <title>Subintervals &middot; Trainingscockpit v6.7</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#070a0f">
   <script>
@@ -1449,19 +1449,63 @@
     .s-chip { padding: 8px 10px; border: 1px solid var(--line); border-radius: 12px; background: linear-gradient(180deg, var(--surface-2), var(--surface)); display: flex; flex-direction: column; gap: 2px; }
     .s-chip span { font-size: 10px; letter-spacing: .6px; color: var(--text-muted); font-weight: 700; }
     .s-chip b { font-size: 15px; font-weight: 800; }
+
+    /* ===== v6.7 DETAIL-ANSICHTEN ===== */
+    .kpi-row[data-detail], #dashRecs[data-detail] { cursor: pointer; position: relative; transition: transform .12s, box-shadow .15s; }
+    .kpi-row[data-detail]:hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(0,0,0,.35) !important; }
+    .kpi-row[data-detail]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .d-more { align-self: flex-end; margin-top: 2px; padding: 4px 12px; font-size: 11.5px; font-weight: 700; letter-spacing: .3px; color: #cfd6ff; background: rgba(109,123,255,.18); border: 1px solid rgba(109,123,255,.4); border-radius: 99px; }
+    :root[data-theme="light"] .d-more { color: #4338ca; }
+    #detailSheet { position: fixed; inset: 0; z-index: 200; display: none; background: rgba(3,8,16,.62); backdrop-filter: blur(3px); }
+    #detailSheet.open { display: flex; align-items: flex-end; justify-content: center; }
+    body.sheet-open { overflow: hidden; }
+    .d-panel { width: 100%; max-width: 780px; max-height: 94vh; overflow-y: auto; background: var(--bg, #0b111a); border: 1px solid var(--line); border-radius: 22px 22px 0 0; padding: 0 16px 28px; box-shadow: 0 -12px 40px rgba(0,0,0,.5); }
+    @media (min-width: 800px) { #detailSheet.open { align-items: center; } .d-panel { border-radius: 22px; max-height: 90vh; } }
+    .d-head { position: sticky; top: 0; z-index: 2; display: flex; justify-content: space-between; align-items: flex-start; gap: 12px; padding: 16px 0 12px; background: var(--bg, #0b111a); border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+    .d-title { font-size: 21px; font-weight: 800; letter-spacing: -.2px; color: var(--text); }
+    .d-subtitle { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+    .d-close { flex: none; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: rgba(127,127,127,.15); color: var(--text); font-size: 16px; cursor: pointer; }
+    .d-pills { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 12px; }
+    .d-pill { padding: 7px 14px; border-radius: 99px; border: 1px solid var(--line); background: transparent; color: var(--text-muted); font-weight: 700; font-size: 12.5px; cursor: pointer; font-family: inherit; }
+    .d-pill.active { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #fff; border-color: transparent; }
+    .d-chart { margin: 10px 0; }
+    .d-chart canvas { width: 100%; display: block; }
+    .d-h { margin: 16px 0 4px; font-size: 12px; font-weight: 800; letter-spacing: .7px; text-transform: uppercase; color: var(--text-muted); }
+    .d-legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 11.5px; color: var(--text-muted); margin: 4px 0 8px; }
+    .d-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 5px; }
+    .d-table-wrap { overflow-x: auto; margin: 10px 0; border: 1px solid var(--line); border-radius: 12px; }
+    .d-table { width: 100%; border-collapse: collapse; font-size: 13px; font-variant-numeric: tabular-nums; }
+    .d-table th { text-align: left; padding: 8px 10px; font-size: 10.5px; letter-spacing: .6px; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--line); background: rgba(127,127,127,.06); white-space: nowrap; }
+    .d-table td { padding: 8px 10px; border-bottom: 1px solid var(--line-soft); vertical-align: top; }
+    .d-table tr:last-child td { border-bottom: 0; }
+    .d-table .d-sub, .d-sub { font-size: 11px; color: var(--text-muted); }
+    .d-table tr.d-click { cursor: pointer; }
+    .d-table tr.d-click:hover td { background: rgba(109,123,255,.10); }
+    .d-table tr.d-today td { background: rgba(0,229,255,.08); }
+    .d-links { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .d-panel .exp { margin: 8px 0; }
   </style>
 </head>
 <body>
 
   <div class="app-shell">
 
+    <div id="detailSheet" aria-hidden="true">
+      <div id="detailPanel" class="d-panel" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+        <div class="d-head">
+          <div><div id="detailTitle" class="d-title"></div><div id="detailSub" class="d-subtitle"></div></div>
+          <button type="button" class="d-close" aria-label="Schließen">✕</button>
+        </div>
+        <div id="detailBody"></div>
+      </div>
+    </div>
     <div id="updateBanner" style="display:none;padding:10px 14px;background:var(--panel-alt);border:1px solid var(--amber);color:var(--amber);font-size:13px;margin-bottom:10px;text-align:center">
       <span id="updateText"></span>
       <button type="button" class="btn ghost sm" id="btnReloadNew" style="margin-left:10px">Jetzt neu laden</button>
     </div>
     <!-- TOP HEADER -->
     <div class="top-bar">
-      <h1 class="brand-title">Subintervals <span class="ver">v6.6</span></h1>
+      <h1 class="brand-title">Subintervals <span class="ver">v6.7</span></h1>
       <div class="top-actions">
         <button type="button" class="theme-btn" id="btnTheme" title="Zwischen hell und dunkel wechseln" aria-label="Design wechseln">☀</button>
         <button type="button" class="sync-btn" id="btnGlobalSync" aria-label="Alle Daten synchronisieren"><span class="ico">↻</span> Sync</button>
@@ -2618,6 +2662,398 @@
     // =========================================================================
     // MASTER SYNC
     // =========================================================================
+    // ===== DETAIL-ANSICHTEN (Dashboard-Karten antippen) =====
+    const DETAIL = { topic: null, opts: {} };
+    const DCHARTS = {};
+    const D_WD = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+    const dPad = n => String(n).padStart(2, "0");
+    const dHours = h => `${Math.floor(h)}:${dPad(Math.round((h % 1) * 60) % 60)} h`;
+    const dMean = a => { a = a.filter(v => v !== null && v !== undefined && !isNaN(v)); return a.length ? a.reduce((x, y) => x + y, 0) / a.length : null; };
+    const dSum = a => a.reduce((x, y) => x + (y || 0), 0);
+    const dNum = (v, d = 0) => (v === null || v === undefined || isNaN(v)) ? "–" : Number(v).toFixed(d).replace(".", ",");
+    const dSign = (v, d = 1) => (v === null || v === undefined || isNaN(v)) ? "–" : (v > 0 ? "+" : "") + Number(v).toFixed(d).replace(".", ",");
+    function dDays(n) { const out = []; for (let i = n - 1; i >= 0; i--) out.push(isoDateOffset(-i)); return out; }
+    function dWellSorted() { return (APP_STATE.wellness || []).filter(w => w.id).slice().sort((a, b) => a.id.localeCompare(b.id)); }
+    function dWd(date) { return `${D_WD[weekdayIndex(date)]} ${dmy(date)}`; }
+    function dChips(list) { return `<div class="s-chips">${list.map(x => `<div class="s-chip"><span>${x[0]}</span><b${x[2] ? ` style="color:${x[2]}"` : ""}>${x[1]}</b></div>`).join("")}</div>`; }
+    function dPills(opts, cur) { return `<div class="d-pills">${opts.map(o => `<button type="button" class="d-pill${String(o[0]) === String(cur) ? " active" : ""}" data-range="${o[0]}">${o[1]}</button>`).join("")}</div>`; }
+    function dChartBox(id, h) { return `<div class="d-chart"><canvas id="${id}" style="height:${h || 200}px; touch-action: pan-y;"></canvas><div class="chart-readout" id="${id}Read">Diagramm antippen oder ziehen.</div></div>`; }
+    function dTable(head, rows) {
+      return `<div class="d-table-wrap"><table class="d-table"><thead><tr>${head.map(x => `<th>${x}</th>`).join("")}</tr></thead><tbody>${rows.join("")}</tbody></table></div>`;
+    }
+
+    function dChart(id, cfg) {
+      DCHARTS[id] = cfg;
+      const cv = document.getElementById(id);
+      if (cv && !cv._dBound) {
+        cv._dBound = true;
+        const h = ev => {
+          const c = DCHARTS[id]; if (!c) return;
+          const r = cv.getBoundingClientRect();
+          const n = c.labels.length; const plotW = r.width - 40 - 8;
+          const bar = c.type === "bar";
+          let i = bar ? Math.floor((ev.clientX - r.left - 40) / (plotW / n)) : Math.round((ev.clientX - r.left - 40) / (plotW / Math.max(1, n - 1)));
+          i = Math.max(0, Math.min(n - 1, i));
+          dChartDraw(id, i);
+        };
+        cv.addEventListener("pointerdown", h);
+        cv.addEventListener("pointermove", ev => { if (ev.pointerType === "mouse" || ev.pressure > 0) h(ev); });
+      }
+      dChartDraw(id, null);
+    }
+
+    function dChartDraw(id, cur) {
+      const c = DCHARTS[id]; const canvas = document.getElementById(id);
+      if (!c || !canvas) return;
+      const s = setupCanvas(canvas); if (!s) return;
+      const { ctx, w, h } = s;
+      const padL = 40, padR = 8, padT = 10, padB = 22;
+      const plotW = w - padL - padR, plotH = h - padT - padB;
+      const n = c.labels.length; const bar = c.type === "bar";
+      // y-Bereich
+      let lo = Infinity, hi = -Infinity;
+      if (c.stacked) { for (let i = 0; i < n; i++) { hi = Math.max(hi, dSum(c.series.map(se => se.vals[i] || 0))); } lo = 0; }
+      else c.series.forEach(se => se.vals.forEach(v => { if (v !== null && v !== undefined && !isNaN(v)) { lo = Math.min(lo, v); hi = Math.max(hi, v); } }));
+      (c.hlines || []).forEach(l => { lo = Math.min(lo, l.v); hi = Math.max(hi, l.v); });
+      (c.bands || []).forEach(b => { if (c.fitBands) { lo = Math.min(lo, b.from); hi = Math.max(hi, b.to); } });
+      if (!isFinite(lo)) { lo = 0; hi = 1; }
+      if (bar && c.yMin === undefined) lo = Math.min(0, lo);
+      if (c.yMin !== undefined) lo = c.yMin;
+      if (c.yMax !== undefined) hi = c.yMax;
+      const span = (hi - lo) || 1;
+      if (c.yMax === undefined) hi += span * 0.08;
+      if (c.yMin === undefined && !bar) lo -= span * 0.08;
+      const yOf = v => padT + plotH - (v - lo) / ((hi - lo) || 1) * plotH;
+      const slot = plotW / n;
+      const xOf = i => bar ? padL + (i + 0.5) * slot : padL + (n <= 1 ? plotW / 2 : i * plotW / (n - 1));
+      ctx.fillStyle = "#030508"; ctx.fillRect(0, 0, w, h);
+      ctx.font = "10px Calibri, Carlito, Arial, sans-serif";
+      (c.bands || []).forEach(b => { const y1 = yOf(Math.min(hi, b.to)), y2 = yOf(Math.max(lo, b.from)); if (y2 > y1) { ctx.fillStyle = b.color; ctx.fillRect(padL, y1, plotW, y2 - y1); } });
+      // Raster
+      ctx.textAlign = "right";
+      for (let i = 0; i <= 4; i++) {
+        const v = lo + (hi - lo) * i / 4, y = yOf(v);
+        ctx.strokeStyle = "#142030"; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(padL, y); ctx.lineTo(padL + plotW, y); ctx.stroke();
+        ctx.fillStyle = "#8b9bb4"; ctx.fillText((c.fmt || (x => String(Math.round(x))))(v), padL - 5, y + 3);
+      }
+      // x-Beschriftung
+      ctx.textAlign = "center"; ctx.fillStyle = "#8b9bb4";
+      const every = c.xEvery || Math.max(1, Math.ceil(n / Math.max(2, Math.floor(plotW / 54))));
+      for (let i = 0; i < n; i += every) ctx.fillText(c.labels[i], xOf(i), h - 7);
+      // Serien
+      if (bar) {
+        if (c.stacked) {
+          for (let i = 0; i < n; i++) {
+            let acc = 0;
+            c.series.forEach(se => {
+              const v = se.vals[i] || 0; if (v <= 0) return;
+              const y1 = yOf(acc + v), y2 = yOf(acc);
+              const gx = ctx.createLinearGradient(0, y1, 0, y2); gx.addColorStop(0, se.color); gx.addColorStop(1, se.color + "aa");
+              ctx.fillStyle = gx; ctx.fillRect(padL + i * slot + slot * 0.15, y1, slot * 0.7, Math.max(1, y2 - y1));
+              acc += v;
+            });
+          }
+        } else if (c.overlay) {
+          c.series.forEach((se, k) => {
+            for (let i = 0; i < n; i++) {
+              const v = se.vals[i]; if (v === null || v === undefined || v <= 0) continue;
+              const bw = k === 0 ? slot * 0.8 : slot * 0.46;
+              ctx.fillStyle = k === 0 ? se.color + "40" : se.color;
+              ctx.fillRect(xOf(i) - bw / 2, yOf(v), bw, yOf(0) - yOf(v));
+            }
+          });
+        } else {
+          const se = c.series[0];
+          for (let i = 0; i < n; i++) {
+            const v = se.vals[i]; if (v === null || v === undefined) continue;
+            const col = (se.colors && se.colors[i]) || se.color;
+            const y = yOf(Math.max(v, lo));
+            const gx = ctx.createLinearGradient(0, y, 0, yOf(lo)); gx.addColorStop(0, col); gx.addColorStop(1, col + "55");
+            ctx.fillStyle = gx; ctx.fillRect(padL + i * slot + slot * 0.18, y, slot * 0.64, Math.max(1, yOf(lo) - y));
+          }
+        }
+      } else {
+        c.series.forEach((se, k) => {
+          ctx.beginPath(); let st = false, fx = padL, lx = padL;
+          se.vals.forEach((v, i) => { if (v === null || v === undefined || isNaN(v)) return; const x = xOf(i), y = yOf(v); if (!st) { ctx.moveTo(x, y); st = true; fx = x; } else ctx.lineTo(x, y); lx = x; });
+          ctx.strokeStyle = se.color; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.stroke();
+          if (se.fill && st) {
+            ctx.lineTo(lx, yOf(lo)); ctx.lineTo(fx, yOf(lo)); ctx.closePath();
+            const gx = ctx.createLinearGradient(0, padT, 0, padT + plotH); gx.addColorStop(0, se.color + "55"); gx.addColorStop(1, se.color + "05");
+            ctx.fillStyle = gx; ctx.fill();
+          }
+        });
+      }
+      (c.hlines || []).forEach(l => {
+        ctx.save(); ctx.setLineDash([5, 4]); ctx.strokeStyle = l.color; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.moveTo(padL, yOf(l.v)); ctx.lineTo(padL + plotW, yOf(l.v)); ctx.stroke(); ctx.restore();
+        if (l.label) { ctx.textAlign = "left"; ctx.fillStyle = l.color; ctx.fillText(l.label, padL + 4, yOf(l.v) - 3); }
+      });
+      const rd = document.getElementById(id + "Read");
+      if (cur !== null && cur !== undefined) {
+        const x = xOf(cur);
+        ctx.save(); ctx.setLineDash([4, 3]); ctx.strokeStyle = "#ffffff"; ctx.lineWidth = 1;
+        ctx.beginPath(); ctx.moveTo(x, padT); ctx.lineTo(x, padT + plotH); ctx.stroke(); ctx.restore();
+        if (!bar) c.series.forEach(se => { const v = se.vals[cur]; if (v === null || v === undefined) return; ctx.beginPath(); ctx.arc(x, yOf(v), 3.5, 0, Math.PI * 2); ctx.fillStyle = se.color; ctx.fill(); });
+        if (rd) rd.innerHTML = c.readout ? c.readout(cur) : `<b>${esc(c.labels[cur])}</b> | ` + c.series.map(se => `${esc(se.name)} <b>${(c.fmt || (v => String(Math.round(v))))(se.vals[cur] === undefined || se.vals[cur] === null ? NaN : se.vals[cur])}</b>`).join(" | ");
+      } else if (rd) rd.textContent = "Diagramm antippen oder ziehen.";
+    }
+
+    const DETAIL_RENDER = {
+      sleep(o) {
+        const range = o.range || 14;
+        const days = dDays(range), wm = {}; dWellSorted().forEach(w => { wm[w.id] = w; });
+        const hrs = days.map(d => (wm[d] && wm[d].sleepSecs > 0) ? wm[d].sleepSecs / 3600 : null);
+        const have = hrs.filter(v => v !== null);
+        const avg = dMean(have), last7 = dMean(hrs.slice(-7)), prev7 = dMean(hrs.slice(-14, -7));
+        const deficit = dSum(have.map(v => Math.max(0, 8 - v)));
+        const scores = days.map(d => wm[d] && wm[d].sleepScore > 0 ? Number(wm[d].sleepScore) : null);
+        const rhr = days.map(d => wm[d] && wm[d].restingHR > 0 ? Number(wm[d].restingHR) : null);
+        const hrv = days.map(d => wm[d] && wm[d].hrv > 0 ? Number(wm[d].hrv) : null);
+        const trend = (last7 !== null && prev7 !== null) ? last7 - prev7 : null;
+        const rows = days.slice().reverse().slice(0, 14).map((d, k) => { const i = days.length - 1 - k; return `<tr><td>${dWd(d)}</td><td>${hrs[i] !== null ? dHours(hrs[i]) : "–"}</td><td>${dNum(scores[i])}</td><td>${dNum(rhr[i])}</td><td>${dNum(hrv[i])}</td></tr>`; });
+        return {
+          title: "Schlaf", sub: `Letzte ${range} Nächte`,
+          html: dPills([[7, "7 Tage"], [14, "14 Tage"], [30, "30 Tage"], [90, "90 Tage"]], range) +
+            dChips([["Ø DAUER", avg !== null ? dHours(avg) : "–", "var(--cyan)"], ["Ø LETZTE 7", last7 !== null ? dHours(last7) : "–", "var(--cyan)"], ["TREND ZUR VORWOCHE", trend !== null ? (trend >= 0 ? "+" : "−") + dHours(Math.abs(trend)).replace(" h", " h") : "–", trend !== null && trend < 0 ? "var(--amber)" : "var(--green)"], ["NÄCHTE ≥ 8 H", `${have.filter(v => v >= 8).length} von ${have.length}`, "var(--green)"], ["SCHLAFDEFIZIT", dHours(deficit), deficit > 8 ? "var(--red)" : "var(--amber)"], ["KÜRZESTE", have.length ? dHours(Math.min(...have)) : "–", "var(--red)"], ["Ø SCORE", dNum(dMean(scores)), ""], ["Ø RUHEPULS", dNum(dMean(rhr)) + " bpm", "var(--red)"], ["Ø HRV", dNum(dMean(hrv)) + " ms", "var(--purple)"]]) +
+            dChartBox("dcMain", 210) +
+            `<div class="exp">Ziel: 8 h pro Nacht. Grün ab 8 h, cyan ab 7 h, amber ab 6 h, rot darunter. Das Defizit summiert die fehlenden Stunden gegenüber 8 h über den gewählten Zeitraum.</div>` +
+            dTable(["Nacht", "Dauer", "Score", "Ruhepuls", "HRV"], rows),
+          after() {
+            dChart("dcMain", { type: "bar", labels: days.map(d => dmy(d).slice(0, 5)), series: [{ name: "Schlaf", vals: hrs, color: "#00e5ff", colors: hrs.map(v => v === null ? "#00e5ff" : v >= 8 ? "#00ff66" : v >= 7 ? "#00e5ff" : v >= 6 ? "#ffb000" : "#ff3366") }], yMin: 0, yMax: 10, hlines: [{ v: 8, color: "#ffb000", label: "Ziel 8 h" }], fmt: v => isNaN(v) ? "–" : dHours(v) });
+          }
+        };
+      },
+      cal(o) {
+        const range = o.range || 7;
+        const days = dDays(range).map(d => calDay(d));
+        const st = calStats(days);
+        const hasBase = calHasBase();
+        const rows = days.slice().reverse().map(d => `<tr><td>${dWd(d.date)}</td><td><b>${fmtKcal(d.total)}</b></td><td>${hasBase ? fmtKcal(d.bmr) : "–"}</td><td>${fmtKcal(d.neat)}</td><td>${fmtKcal(d.active)}</td><td>${d.count ? d.count + " / " + Math.round(d.secs / 60) + " min" : "Ruhetag"}</td></tr>`);
+        return {
+          title: "Kalorienverbrauch", sub: `Letzte ${range} Tage${hasBase ? " · gesamt" : " · nur aktiver Verbrauch"}`,
+          html: dPills([[7, "7 Tage"], [14, "14 Tage"], [30, "30 Tage"]], range) +
+            dChips([["Ø PRO TAG", fmtKcal(st.avgTotal) + " kcal", "#ff7700"], ["Ø SPORT", fmtKcal(st.avgActive) + " kcal", "var(--amber)"], ["Ø ALLTAG", fmtKcal(st.avgNeat) + " kcal", "var(--cyan)"], ["TRAININGSTAGE", `${st.trainDays} von ${st.n}`, ""], ["SPORT PRO STUNDE", st.perHour ? fmtKcal(st.perHour) + " kcal" : "–", ""], ["HÖCHSTER TAG", st.max ? fmtKcal(st.max.total) + " kcal" : "–", "var(--red)"]]) +
+            dChartBox("dcMain", 220) +
+            `<div class="d-legend"><span><i style="background:#64748b"></i>Grundumsatz</span><span><i style="background:#00e5ff"></i>Alltag</span><span><i style="background:#ff7700"></i>Sport</span><span><i style="background:#b866ff"></i>Verdauung</span></div>` +
+            (hasBase ? "" : `<div class="exp">Der Grundumsatz konnte nicht ermittelt werden (Körperdaten unter TOOLS prüfen): Es wird nur der aktive Verbrauch aus Einheiten gezeigt.</div>`) +
+            dTable(["Tag", "Gesamt", "Grundumsatz", "Alltag", "Sport", "Training"], rows),
+          after() {
+            dChart("dcMain", { type: "bar", stacked: true, labels: days.map(d => dmy(d.date).slice(0, 5)), series: [{ name: "Grundumsatz", vals: days.map(d => d.bmr), color: "#64748b" }, { name: "Alltag", vals: days.map(d => d.neat), color: "#00e5ff" }, { name: "Sport", vals: days.map(d => d.active), color: "#ff7700" }, { name: "Verdauung", vals: days.map(d => d.tef), color: "#b866ff" }], fmt: v => isNaN(v) ? "–" : fmtKcal(v), readout: i => `<b>${dWd(days[i].date)}</b> | gesamt <b>${fmtKcal(days[i].total)}</b> kcal | Sport <b>${fmtKcal(days[i].active)}</b>` });
+          }
+        };
+      },
+      last(o) {
+        const list = (APP_STATE.activities || []).filter(a => a.start_date_local).slice().sort((a, b) => b.start_date_local.localeCompare(a.start_date_local)).slice(0, 15);
+        const asc = list.slice().reverse();
+        const paceTxt = a => {
+          if (!a.distance || !a.moving_time) return "–";
+          return sportGroup(a.type) === "run" ? fmtPaceSec(a.moving_time / (a.distance / 1000)) + "/km" : (a.distance / 1000 / (a.moving_time / 3600)).toFixed(1).replace(".", ",") + " km/h";
+        };
+        const rows = list.map(a => `<tr class="d-click" data-act="${esc(a.id)}"><td>${dWd(a.start_date_local.slice(0, 10))}</td><td>${esc(a.name || "Einheit")}<div class="d-sub">${esc(a.type || "")}</div></td><td>${a.distance ? (a.distance / 1000).toFixed(1).replace(".", ",") : "–"}</td><td>${a.moving_time ? Math.round(a.moving_time / 60) : "–"}</td><td>${paceTxt(a)}</td><td>${a.average_heartrate ? Math.round(a.average_heartrate) : "–"}</td><td><b>${a.icu_training_load || "–"}</b></td></tr>`);
+        const tss = list.map(a => a.icu_training_load || 0);
+        return {
+          title: "Letzte Einheiten", sub: "Tippe eine Einheit für die Voll-Analyse",
+          html: dChips([["EINHEITEN", String(list.length), ""], ["Σ LOAD", dNum(dSum(tss)) + " TSS", "var(--green)"], ["Σ DISTANZ", dNum(dSum(list.map(a => (a.distance || 0) / 1000)), 1) + " km", "var(--cyan)"], ["Σ ZEIT", dHours(dSum(list.map(a => (a.moving_time || 0) / 3600))), "var(--amber)"]]) +
+            dChartBox("dcMain", 190) +
+            dTable(["Tag", "Einheit", "km", "min", "Tempo", "Puls", "TSS"], rows),
+          after() {
+            dChart("dcMain", { type: "bar", labels: asc.map(a => dmy(a.start_date_local.slice(0, 10)).slice(0, 5)), series: [{ name: "Load", vals: asc.map(a => a.icu_training_load || 0), color: "#00ff66" }], fmt: v => isNaN(v) ? "–" : String(Math.round(v)) + " TSS", readout: i => `<b>${esc(asc[i].name || "Einheit")}</b> | ${dmy(asc[i].start_date_local.slice(0, 10))} | Load <b>${asc[i].icu_training_load || 0}</b> TSS` });
+          }
+        };
+      },
+      vo2(o) {
+        const range = o.range || 180;
+        const all = (APP_STATE.vo2History || []).slice().sort((a, b) => a.date.localeCompare(b.date));
+        const from = range >= 9999 ? "0000" : shiftDateStr(isoDateOffset(0), -range);
+        const pts = all.filter(p => p.date >= from);
+        const last = all[all.length - 1];
+        const d30 = last ? all.filter(p => p.date <= shiftDateStr(last.date, -30)).slice(-1)[0] : null;
+        const target = 61;
+        const rows = pts.slice().reverse().slice(0, 12).map(p => `<tr><td>${dmy(p.date)}</td><td><b>${p.vo2.toFixed(1).replace(".", ",")}</b></td><td>${p.src === "wellness" ? "Gerät (Wellness)" : "Schätzung"}</td></tr>`);
+        return {
+          title: "VO2max (Lauf)", sub: last ? `aktuell ${last.vo2.toFixed(1).replace(".", ",")} ml/kg/min · Ziel ${target}` : "keine Daten",
+          html: dPills([[90, "90 Tage"], [180, "180 Tage"], [9999, "Alles"]], range) +
+            dChips([["AKTUELL", last ? last.vo2.toFixed(1).replace(".", ",") : "–", "var(--cyan)"], ["ZIEL", String(target), ""], ["NOCH BIS ZUM ZIEL", last ? dNum(Math.max(0, target - last.vo2), 1) : "–", "var(--amber)"], ["SPITZE", pts.length ? Math.max(...pts.map(p => p.vo2)).toFixed(1).replace(".", ",") : "–", "var(--green)"], ["TIEFPUNKT", pts.length ? Math.min(...pts.map(p => p.vo2)).toFixed(1).replace(".", ",") : "–", "var(--red)"], ["ÄNDERUNG 30 TAGE", last && d30 ? dSign(last.vo2 - d30.vo2) : "–", ""]]) +
+            (pts.length > 1 ? dChartBox("dcMain", 200) : `<div class="exp">Für ein Diagramm sind mindestens zwei Werte im Zeitraum nötig.</div>`) +
+            `<div class="exp">Der Wert stammt entweder aus dem Wellness-Feld vo2max (Garmin über Intervals.icu) oder wird grob aus Läufen geschätzt. Garmin führt Lauf- und Rad-VO2max getrennt.</div>` +
+            dTable(["Datum", "VO2max", "Quelle"], rows),
+          after() {
+            if (pts.length > 1) dChart("dcMain", { type: "line", labels: pts.map(p => dmy(p.date).slice(0, 5)), series: [{ name: "VO2max", vals: pts.map(p => p.vo2), color: "#00e5ff", fill: true }], hlines: [{ v: target, color: "#00ff66", label: `Ziel ${target}` }], fmt: v => isNaN(v) ? "–" : v.toFixed(1).replace(".", ",") });
+          }
+        };
+      },
+      pmc(o) {
+        const range = o.range || 90, focus = o.focus || "ctl";
+        const ws = dWellSorted().filter(w => w.ctl > 0 || w.atl > 0);
+        const from = shiftDateStr(isoDateOffset(0), -range);
+        const pts = ws.filter(w => w.id >= from);
+        const cur = ws[ws.length - 1];
+        const at = (dd) => { const l = ws.filter(w => w.id <= dd); return l.length ? l[l.length - 1] : null; };
+        const p7 = at(shiftDateStr(isoDateOffset(0), -7)), p28 = at(shiftDateStr(isoDateOffset(0), -28));
+        const acts = APP_STATE.activities || [];
+        const tssSum = days => dSum(acts.filter(a => (a.start_date_local || "").slice(0, 10) > shiftDateStr(isoDateOffset(0), -days)).map(a => a.icu_training_load || 0));
+        const tsb = cur ? cur.ctl - cur.atl : null;
+        const expl = {
+          ctl: "<b>Fitness (CTL)</b> ist der gewichtete Durchschnitt deiner Trainingslast der letzten etwa 42 Tage. Je höher, desto belastbarer bist du. Sie steigt langsam und sinkt langsam.",
+          atl: "<b>Ermüdung (ATL)</b> ist der Durchschnitt der Last der letzten etwa 7 Tage. Sie reagiert schnell auf harte Tage und fällt bei Ruhe rasch wieder.",
+          tsb: "<b>Form (TSB)</b> = Fitness minus Ermüdung. Unter −25 droht Überlastung, −10 bis −25 ist der produktive Aufbaubereich, −10 bis +5 Erhaltung, über +5 frisch (Wettkampf)."
+        };
+        const names = { ctl: "Fitness (CTL)", atl: "Ermüdung (ATL)", tsb: "Form (TSB)" };
+        return {
+          title: names[focus] || "Belastung", sub: cur ? `Stand ${dmy(cur.id)}` : "keine Daten",
+          html: dPills([[42, "6 Wochen"], [90, "3 Monate"], [180, "6 Monate"]], range) +
+            dChips([["FITNESS CTL", cur ? dNum(cur.ctl, 1) : "–", "var(--cyan)"], ["ERMÜDUNG ATL", cur ? dNum(cur.atl, 1) : "–", "var(--purple)"], ["FORM TSB", tsb !== null ? dSign(tsb) : "–", "var(--green)"], ["CTL-ÄNDERUNG 7 TAGE", p7 ? dSign(cur.ctl - p7.ctl) : "–", ""], ["CTL-ÄNDERUNG 28 TAGE", p28 ? dSign(cur.ctl - p28.ctl) : "–", ""], ["LAST 7 TAGE", Math.round(tssSum(7)) + " TSS", "var(--amber)"], ["LAST 28 TAGE", Math.round(tssSum(28)) + " TSS", "var(--amber)"]]) +
+            `<div class="exp">${expl[focus] || ""}</div>` +
+            `<div class="d-h">Fitness und Ermüdung</div>` + dChartBox("dcMain", 200) +
+            `<div class="d-legend"><span><i style="background:#00e5ff"></i>Fitness (CTL)</span><span><i style="background:#b866ff"></i>Ermüdung (ATL)</span></div>` +
+            `<div class="d-h">Form (TSB)</div>` + dChartBox("dcTsb", 170) +
+            `<div class="d-legend"><span><i style="background:#ff3366"></i>unter −25 Überlastung</span><span><i style="background:#00ff66"></i>−25 bis −10 Aufbau</span><span><i style="background:#8b9bb4"></i>−10 bis +5 Erhaltung</span><span><i style="background:#00e5ff"></i>über +5 frisch</span></div>`,
+          after() {
+            const labels = pts.map(p => dmy(p.id).slice(0, 5));
+            dChart("dcMain", { type: "line", labels, series: [{ name: "CTL", vals: pts.map(p => p.ctl), color: "#00e5ff", fill: focus === "ctl" }, { name: "ATL", vals: pts.map(p => p.atl), color: "#b866ff", fill: focus === "atl" }], fmt: v => isNaN(v) ? "–" : v.toFixed(1).replace(".", ",") });
+            dChart("dcTsb", { type: "line", labels, series: [{ name: "TSB", vals: pts.map(p => p.ctl - p.atl), color: "#00ff66", fill: false }], bands: [{ from: -100, to: -25, color: "rgba(255,51,102,0.14)" }, { from: -25, to: -10, color: "rgba(0,255,102,0.12)" }, { from: -10, to: 5, color: "rgba(139,155,180,0.10)" }, { from: 5, to: 100, color: "rgba(0,229,255,0.12)" }], fitBands: false, hlines: [{ v: 0, color: "#8b9bb4" }], fmt: v => isNaN(v) ? "–" : dSign(v, 0) });
+          }
+        };
+      },
+      ramp(o) {
+        const weeks = [];
+        for (let k = 11; k >= 0; k--) {
+          const end = shiftDateStr(isoDateOffset(0), -7 * k);
+          const c1 = wellAtOrBefore(end, "ctl"), c0 = wellAtOrBefore(shiftDateStr(end, -7), "ctl");
+          weeks.push({ end, v: (c1 && c0) ? c1.ctl - c0.ctl : null });
+        }
+        const vals = weeks.map(w => w.v);
+        const colOf = v => v === null ? "#8b9bb4" : v < 0 ? "#b866ff" : v < 3 ? "#00e5ff" : v <= 7 ? "#00ff66" : v <= 10 ? "#ffb000" : "#ff3366";
+        const cur = vals[vals.length - 1];
+        const inRange = vals.filter(v => v !== null && v >= 3 && v <= 7).length;
+        const rows = weeks.slice().reverse().map(w => `<tr><td>bis ${dmy(w.end)}</td><td><b style="color:${colOf(w.v)}">${w.v === null ? "–" : dSign(w.v)}</b></td><td>${w.v === null ? "" : w.v < 0 ? "abbauend" : w.v < 3 ? "erhaltend" : w.v <= 7 ? "produktiv" : w.v <= 10 ? "aggressiv" : "sehr hoch"}</td></tr>`);
+        return {
+          title: "Ramp Rate", sub: "Veränderung der Fitness (CTL) pro Woche",
+          html: dChips([["AKTUELL", dSign(cur), "var(--amber)"], ["Ø LETZTE 4 WOCHEN", dSign(dMean(vals.slice(-4))), ""], ["WOCHEN IM ZIEL (+3 BIS +7)", `${inRange} von ${vals.filter(v => v !== null).length}`, "var(--green)"]]) +
+            dChartBox("dcMain", 210) +
+            `<div class="exp">Grün (+3 bis +7 CTL pro Woche) gilt als gut verträglicher Aufbau. Über +10 steigt das Verletzungs- und Überlastungsrisiko deutlich. Unter 0 baut die Fitness ab.</div>` +
+            dTable(["Woche", "CTL-Änderung", "Bewertung"], rows),
+          after() {
+            dChart("dcMain", { type: "bar", labels: weeks.map(w => dmy(w.end).slice(0, 5)), series: [{ name: "Ramp", vals: vals.map(v => v === null ? null : v), color: "#00ff66", colors: vals.map(colOf) }], bands: [{ from: 3, to: 7, color: "rgba(0,255,102,0.12)" }], hlines: [{ v: 0, color: "#8b9bb4" }], fmt: v => isNaN(v) ? "–" : dSign(v, 0) });
+          }
+        };
+      },
+      week(o) {
+        const wk = DASH_GFX && DASH_GFX.week;
+        if (!wk) return { title: "Wochenbilanz", sub: "", html: `<div class="exp">Noch keine Daten.</div>`, after() {} };
+        const events = APP_STATE.events || [], acts = APP_STATE.activities || [];
+        const rows = wk.days.map(d => {
+          const plans = events.filter(e => e.category === "WORKOUT" && (e.start_date_local || "").startsWith(d.date));
+          const done = acts.filter(a => (a.start_date_local || "").startsWith(d.date));
+          const txt = [...done.map(a => `✔ ${esc(a.name || "Einheit")} (${a.icu_training_load || 0} TSS)`), ...(d.future || !done.length ? plans.map(e => `○ ${esc(e.name || "Workout")} (${Math.round(e.icu_training_load || estimateWorkoutTss(e))} TSS)`) : [])].join("<br>") || "<span class='d-sub'>frei</span>";
+          return `<tr${d.isToday ? ' class="d-today"' : ""}><td>${d.wd} ${dmy(d.date).slice(0, 5)}</td><td>${Math.round(d.plan)}</td><td><b>${Math.round(d.done)}</b></td><td>${txt}</td></tr>`;
+        });
+        const mon = mondayOf(isoDateOffset(0));
+        const wks = [];
+        for (let k = 7; k >= 0; k--) {
+          const m = shiftDateStr(mon, -7 * k), e = shiftDateStr(m, 6);
+          wks.push({ m, tss: dSum(acts.filter(a => { const d = (a.start_date_local || "").slice(0, 10); return d >= m && d <= e; }).map(a => a.icu_training_load || 0)) });
+        }
+        const avgW = dMean(wks.slice(0, -1).map(w => w.tss));
+        return {
+          title: "Wochenbilanz", sub: `${dmy(wk.days[0].date)} bis ${dmy(wk.days[6].date)}`,
+          html: dChips([["IST", wk.doneTss + " TSS", "var(--green)"], ["SOLL", wk.targetTss + " TSS", ""], ["ERREICHT", wk.pct + " %", wk.pct < 75 ? "var(--red)" : "var(--green)"], ["EINHEITEN", `${wk.doneCount} von ${wk.plannedCount || "–"}`, ""], ["ZEIT", `${dHours(wk.doneMin / 60)} / ${dHours(wk.plannedMin / 60)}`, "var(--amber)"], ["Ø WOCHE (7 VORWOCHEN)", avgW !== null ? Math.round(avgW) + " TSS" : "–", ""]]) +
+            `<div class="d-h">Tage dieser Woche</div>` + dChartBox("dcMain", 180) +
+            `<div class="d-legend"><span><i style="background:#8b9bb4"></i>geplant</span><span><i style="background:#00ff66"></i>absolviert</span></div>` +
+            dTable(["Tag", "Soll", "Ist", "Einheiten"], rows) +
+            `<div class="d-h">Letzte 8 Wochen (TSS)</div>` + dChartBox("dcWeeks", 170),
+          after() {
+            dChart("dcMain", { type: "bar", overlay: true, labels: wk.days.map(d => d.wd), series: [{ name: "Soll", vals: wk.days.map(d => d.plan), color: "#8b9bb4" }, { name: "Ist", vals: wk.days.map(d => d.done), color: "#00ff66" }], fmt: v => isNaN(v) ? "–" : String(Math.round(v)), xEvery: 1 });
+            dChart("dcWeeks", { type: "bar", labels: wks.map(w => dmy(w.m).slice(0, 5)), series: [{ name: "Woche", vals: wks.map(w => w.tss), color: "#00e5ff", colors: wks.map((w, i) => i === wks.length - 1 ? "#00ff66" : "#00e5ff") }], hlines: avgW !== null ? [{ v: avgW, color: "#ffb000", label: "Ø" }] : [], fmt: v => isNaN(v) ? "–" : String(Math.round(v)), xEvery: 1 });
+          }
+        };
+      },
+      reco(o) {
+        const today = isoDateOffset(0), ws = dWellSorted();
+        const past = ws.filter(w => w.id < today && w.id >= shiftDateStr(today, -28));
+        const lastW = ws.filter(w => w.id <= today).slice(-1)[0] || {};
+        const hrvBase = dMean(past.map(w => Number(w.hrv)).filter(v => v > 0)), rhrBase = dMean(past.map(w => Number(w.restingHR)).filter(v => v > 0));
+        const hrvNow = Number(lastW.hrv) > 0 ? Number(lastW.hrv) : null, rhrNow = Number(lastW.restingHR) > 0 ? Number(lastW.restingHR) : null;
+        const sl7 = dMean(ws.filter(w => w.id > shiftDateStr(today, -7) && w.id <= today && w.sleepSecs > 0).map(w => w.sleepSecs / 3600));
+        const g = DASH_GFX || {};
+        const planned = (APP_STATE.events || []).filter(e => e.category === "WORKOUT" && (e.start_date_local || "").startsWith(today));
+        const pctDiff = (a, b) => (a !== null && b) ? (a / b - 1) * 100 : null;
+        const rows = [
+          ["Form (TSB)", g.tsb !== undefined ? dSign(g.tsb) : "–", g.tsb < -25 ? "Überlastungsgefahr" : g.tsb < -10 ? "produktiver Aufbau" : g.tsb <= 5 ? "Erhaltung" : "frisch"],
+          ["Fitness / Ermüdung", g.ctl !== undefined ? `${dNum(g.ctl, 1)} / ${dNum(g.atl, 1)}` : "–", g.ratio ? `Verhältnis ATL/CTL ${dNum(g.ratio, 2)}` : ""],
+          ["Ramp Rate", g.ramp !== undefined ? dSign(g.ramp) + " CTL/Woche" : "–", g.ramp > 10 ? "zu steil" : g.ramp >= 3 ? "produktiv" : "niedrig"],
+          ["HRV jetzt / Ø 28 Tage", hrvNow !== null ? `${dNum(hrvNow)} / ${dNum(hrvBase)} ms` : "–", pctDiff(hrvNow, hrvBase) !== null ? dSign(pctDiff(hrvNow, hrvBase), 0) + " %" : ""],
+          ["Ruhepuls jetzt / Ø 28 Tage", rhrNow !== null ? `${dNum(rhrNow)} / ${dNum(rhrBase)} bpm` : "–", pctDiff(rhrNow, rhrBase) !== null ? dSign(pctDiff(rhrNow, rhrBase), 0) + " %" : ""],
+          ["Schlaf Ø 7 Nächte", sl7 !== null ? dHours(sl7) : "–", sl7 !== null ? (sl7 >= 7.5 ? "im Ziel" : "unter Ziel (8 h)") : ""],
+          ["Heute geplant", planned.length ? planned.map(e => esc(e.name || "Workout")).join(", ") : "nichts", planned.length ? `${planned.length} Einheit(en)` : ""]
+        ].map(r => `<tr><td>${r[0]}</td><td><b>${r[1]}</b></td><td>${r[2]}</td></tr>`);
+        return {
+          title: "Empfehlung heute", sub: "Auf dieser Grundlage entstehen die Hinweise",
+          html: `<div class="exp">Die Hinweise auf dem Dashboard werden aus Form, HRV, Ruhepuls, Schlaf und dem Trainingsplan abgeleitet. Das sind die aktuellen Eingangswerte:</div>` + dTable(["Kennzahl", "Wert", "Einordnung"], rows) +
+            `<div class="d-links"><button type="button" class="pill" data-open="pmc:tsb">Form im Detail</button><button type="button" class="pill" data-open="sleep">Schlaf im Detail</button><button type="button" class="pill" data-open="ramp">Ramp Rate</button></div>`,
+          after() {}
+        };
+      }
+    };
+
+    function renderDetail() {
+      const fn = DETAIL_RENDER[DETAIL.topic];
+      if (!fn) return;
+      const out = fn(DETAIL.opts);
+      document.getElementById("detailTitle").textContent = out.title;
+      document.getElementById("detailSub").textContent = out.sub || "";
+      document.getElementById("detailBody").innerHTML = out.html;
+      const panel = document.getElementById("detailPanel");
+      const keep = panel.scrollTop;
+      requestAnimationFrame(() => { try { out.after && out.after(); } catch (e) { console.error(e); } panel.scrollTop = keep; });
+    }
+    function openDetail(topic, opts) {
+      DETAIL.topic = topic; DETAIL.opts = opts || {};
+      document.getElementById("detailSheet").classList.add("open");
+      document.body.classList.add("sheet-open");
+      document.getElementById("detailPanel").scrollTop = 0;
+      renderDetail();
+    }
+    function closeDetail() {
+      document.getElementById("detailSheet").classList.remove("open");
+      document.body.classList.remove("sheet-open");
+    }
+    function initDetailSheets() {
+      const map = { dashSleepVal: "sleep", dashCalVal: "cal", dashLastVal: "last", kpiVo2max: "vo2", kpiCtl: "pmc:ctl", kpiAtl: "pmc:atl", kpiTsb: "pmc:tsb", kpiRamp: "ramp", weekPctVal: "week" };
+      Object.keys(map).forEach(id => {
+        const el = document.getElementById(id); const row = el && el.closest(".kpi-row");
+        if (!row || row.dataset.detail) return;
+        row.dataset.detail = map[id]; row.tabIndex = 0; row.setAttribute("role", "button");
+        const more = document.createElement("div"); more.className = "d-more"; more.textContent = "Details ›"; row.appendChild(more);
+      });
+      const recs = document.getElementById("dashRecs"); if (recs) recs.dataset.detail = "reco";
+      const open = (v) => { const [t, f] = v.split(":"); openDetail(t, f ? { focus: f } : {}); };
+      document.getElementById("tab-dash").addEventListener("click", ev => {
+        if (ev.target.closest("button, a, input, select, textarea")) return;
+        const el = ev.target.closest("[data-detail]"); if (el) open(el.dataset.detail);
+      });
+      document.getElementById("tab-dash").addEventListener("keydown", ev => {
+        if (ev.key !== "Enter" && ev.key !== " ") return;
+        const el = ev.target.closest && ev.target.closest(".kpi-row[data-detail]"); if (el && ev.target === el) { ev.preventDefault(); open(el.dataset.detail); }
+      });
+      const sheet = document.getElementById("detailSheet");
+      sheet.addEventListener("click", ev => {
+        if (ev.target === sheet || ev.target.closest(".d-close")) { closeDetail(); return; }
+        const pill = ev.target.closest(".d-pill");
+        if (pill) { DETAIL.opts.range = parseInt(pill.dataset.range, 10); renderDetail(); return; }
+        const act = ev.target.closest("[data-act]");
+        if (act) {
+          const id = act.dataset.act; closeDetail(); switchTab("analyze");
+          document.getElementById("selectActivityAnalyze").value = id; loadActivityDeepDive(id); return;
+        }
+        const op = ev.target.closest("[data-open]"); if (op) open(op.dataset.open);
+      });
+      document.addEventListener("keydown", ev => { if (ev.key === "Escape") closeDetail(); });
+      window.addEventListener("resize", () => { if (sheet.classList.contains("open")) Object.keys(DCHARTS).forEach(id => { if (document.getElementById(id)) dChartDraw(id, null); }); });
+    }
+
     // ===== Theme (hell/dunkel) =====
     const LIGHT_MAP = {
       "#8b9bb4": "#5b6b82", "#142030": "#d9e1ec", "#e6edf3": "#1a2433", "#030508": "#f4f7fb",
@@ -2676,7 +3112,7 @@
       }
     }
 
-    const APP_VERSION = "6.6";
+    const APP_VERSION = "6.7";
     const CACHE_KEY = "subintervalsCacheV1";
 
     function renderToday() {
@@ -8000,6 +8436,7 @@
       });
       document.getElementById("btnExtApply").addEventListener("click", applyExtend);
       document.getElementById("btnExtCreate").addEventListener("click", createAdjustedActivity);
+      initDetailSheets();
       document.getElementById("btnWelcomeLogin").addEventListener("click", focusLogin);
       const updWelcome = () => { document.getElementById("dashWelcome").style.display = (getAthleteId() && document.getElementById("cfgApiKey").value.trim()) ? "none" : "block"; };
       ["cfgAthleteId", "cfgApiKey"].forEach(id => document.getElementById(id).addEventListener("input", updWelcome));
