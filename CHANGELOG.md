@@ -2,6 +2,11 @@
 
 Bei jeder Überarbeitung wird die Versionsnummer erhöht (Anzeige im Kopf der Seite und im Browser-Tab).
 
+## v6.1 – 2026-11-25
+- Neues Tool 4 „Einheit verlängern / kürzen“: aufgezeichnete Einheit wählen, Zusatzminuten (auch negativ) mit eigenem Tempo, Puls und Watt eintragen; Vorher/Nachher für Distanz, Zeit, Pace, Puls, Watt, Kalorien und Load
+- Ergebnis kopieren; Kalorien und Load optional in Intervals.icu übernehmen (mit Rückfrage), optional Notiz an die Beschreibung
+- Tools neu nummeriert (Export 5, Körperdaten 6, Wellness-Felder 7)
+
 ## v6.0 – 2026-11-22
 - Plan: Workout-Profil neu als farbiges Mini-Diagramm mit Zeitskala (Minuten), Hilfslinien, Watt-/Pace-Beschriftung in den Blöcken und Farblegende; Darstellungsfehler (leere Pillen) behoben
 - Diagramme: Balken mit Farbverlauf statt flacher Farbe

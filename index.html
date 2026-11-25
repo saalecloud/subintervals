@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Subintervals &middot; Trainingscockpit v6.0</title>
+  <title>Subintervals &middot; Trainingscockpit v6.1</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#070a0f">
   <script>
@@ -1413,6 +1413,13 @@
     .wo-prof-legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
     .wo-steps-list { border-radius: var(--r-sm) !important; background: transparent !important; border: 1px solid var(--line) !important; }
     .feed-item.planned { background: linear-gradient(135deg, rgba(34,211,238,.07), transparent 55%), var(--surface) !important; }
+
+    /* ===== v6.1 EINHEIT VERLAENGERN ===== */
+    .ext-table { width: 100%; border-collapse: collapse; font-size: 13.5px; margin: 4px 0; }
+    .ext-table th { text-align: left; font-size: 11px; letter-spacing: .6px; text-transform: uppercase; color: var(--text-muted); padding: 6px 8px; border-bottom: 1px solid var(--line); }
+    .ext-table td { padding: 8px; border-bottom: 1px solid var(--line-soft); font-variant-numeric: tabular-nums; }
+    .ext-table td:first-child { color: var(--text-muted); }
+    .ext-table .ext-new { font-weight: 800; color: var(--cyan); }
   </style>
 </head>
 <body>
@@ -1425,7 +1432,7 @@
     </div>
     <!-- TOP HEADER -->
     <div class="top-bar">
-      <h1 class="brand-title">Subintervals <span class="ver">v6.0</span></h1>
+      <h1 class="brand-title">Subintervals <span class="ver">v6.1</span></h1>
       <div class="top-actions">
         <button type="button" class="theme-btn" id="btnTheme" title="Zwischen hell und dunkel wechseln" aria-label="Design wechseln">☀</button>
         <button type="button" class="sync-btn" id="btnGlobalSync" aria-label="Alle Daten synchronisieren"><span class="ico">↻</span> Sync</button>
@@ -1976,9 +1983,10 @@
         <button type="button" class="tool-jump" data-jump="toolD"><b>1</b> Login</button>
         <button type="button" class="tool-jump" data-jump="toolC"><b>2</b> Workout planen</button>
         <button type="button" class="tool-jump" data-jump="toolA"><b>3</b> Korrigieren</button>
-        <button type="button" class="tool-jump" data-jump="toolB"><b>4</b> Export</button>
-        <button type="button" class="tool-jump" data-jump="toolE"><b>5</b> Körperdaten</button>
-        <button type="button" class="tool-jump" data-jump="toolF"><b>6</b> Wellness-Felder</button>
+        <button type="button" class="tool-jump" data-jump="toolG"><b>4</b> Verlängern</button>
+        <button type="button" class="tool-jump" data-jump="toolB"><b>5</b> Export</button>
+        <button type="button" class="tool-jump" data-jump="toolE"><b>6</b> Körperdaten</button>
+        <button type="button" class="tool-jump" data-jump="toolF"><b>7</b> Wellness-Felder</button>
       </nav>
 
       <!-- ZUGANG / LOGIN (ganz oben) -->
@@ -2100,10 +2108,56 @@
             </div>
           </section>
 
+          <!-- EINHEIT ANPASSEN / VERLAENGERN -->
+          <section class="tool-sec" id="toolG">
+            <header class="tool-head">
+              <span class="tool-badge">4</span>
+              <div>
+                <h3 class="tool-title">Einheit verlängern / kürzen</h3>
+                <p class="tool-desc">Wähle eine aufgezeichnete Einheit und rechne sie mit zusätzlichen (oder weniger) Minuten neu. Die Werte stehen sofort nebeneinander.</p>
+              </div>
+            </header>
+            <div class="tool-body">
+              <div>
+                <label for="extActivity">Aufgezeichnete Einheit</label>
+                <select id="extActivity"><option value="">Erst synchronisieren …</option></select>
+              </div>
+              <div class="form-grid cols-2">
+                <div>
+                  <label for="extMin">Minuten ergänzen (negativ = kürzen)</label>
+                  <input type="number" id="extMin" value="10" step="1">
+                </div>
+                <div>
+                  <label for="extPace">Tempo der Zusatzminuten (min/km)</label>
+                  <input type="text" id="extPace" placeholder="Ø der Einheit" inputmode="decimal">
+                </div>
+                <div>
+                  <label for="extHr">Puls der Zusatzminuten (bpm)</label>
+                  <input type="number" id="extHr" placeholder="Ø der Einheit">
+                </div>
+                <div>
+                  <label for="extW">Watt der Zusatzminuten</label>
+                  <input type="number" id="extW" placeholder="Ø der Einheit">
+                </div>
+              </div>
+              <div id="extResult"></div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <button type="button" class="btn ghost" id="btnExtCopy">Ergebnis kopieren</button>
+                <button type="button" class="btn amber" id="btnExtApply" style="flex:1;min-width:220px">Kalorien &amp; Load in Intervals.icu übernehmen</button>
+              </div>
+              <div class="checkbox-line">
+                <input type="checkbox" id="extNote">
+                <span>Notiz „Verlängert um … Min“ an die Beschreibung anhängen</span>
+              </div>
+              <div class="tiny">Distanz und Zeit schreibt Intervals.icu bei aufgezeichneten Dateien nicht zuverlässig über die Schnittstelle: Diese Werte stehen nur zum Kopieren bereit. Übernommen werden Kalorien und Load (TSS).</div>
+              <div id="extBanner" class="status-banner"></div>
+            </div>
+          </section>
+
           <!-- 5B: DATEN-EXPORT -->
           <section class="tool-sec" id="toolB">
             <header class="tool-head">
-              <span class="tool-badge">4</span>
+              <span class="tool-badge">5</span>
               <div>
                 <h3 class="tool-title">Daten-Export</h3>
                 <p class="tool-desc">Kopiert alle Einheiten und Vitaldaten des gewählten Zeitraums als JSON in die Zwischenablage, zum Beispiel als Backup.</p>
@@ -2142,7 +2196,7 @@
           <!-- 5E: KOERPERDATEN / GRUNDUMSATZ -->
           <section class="tool-sec" id="toolE">
             <header class="tool-head">
-              <span class="tool-badge">5</span>
+              <span class="tool-badge">6</span>
               <div>
                 <h3 class="tool-title">Körperdaten &amp; Grundumsatz</h3>
                 <p class="tool-desc">Der Grundumsatz wird automatisch aus Körperdaten und Fitnessdaten ermittelt. Den Alltagsverbrauch (NEAT) schätzt die App aus den Schritten der Wellness-Daten, die Verdauung (TEF) als prozentualen Aufschlag. Alle Werte bleiben in diesem Browser.</p>
@@ -2207,7 +2261,7 @@
           <!-- 5F: ENERGIEDATEN AUS WELLNESS -->
           <section class="tool-sec" id="toolF">
             <header class="tool-head">
-              <span class="tool-badge">6</span>
+              <span class="tool-badge">7</span>
               <div>
                 <h3 class="tool-title">Energiedaten aus Wellness</h3>
                 <p class="tool-desc">Zeigt, welche Felder Intervals.icu in deinen Wellness-Daten liefert. Gibt es einen Tagesverbrauch (Gesamt, Grundumsatz oder Aktiv), ordnest du ihn unten zu. Die Kalorien-Anzeige nutzt dann diese Werte statt der Berechnung.</p>
@@ -2579,7 +2633,7 @@
       }
     }
 
-    const APP_VERSION = "6.0";
+    const APP_VERSION = "6.1";
     const CACHE_KEY = "subintervalsCacheV1";
 
     function renderToday() {
@@ -2611,6 +2665,7 @@
       renderToday();
       renderCalendarFeed(FEED_RANGE.back, FEED_RANGE.fwd);
       populateAnalyzeSelector();
+      populateExtendSelector();
       updateVitalTab();
     }
 
@@ -7336,6 +7391,144 @@
     // =========================================================================
     // TAB 5: TOOLS (PATCH, BACKUP EXPORT & WORKOUT PRESETS)
     // =========================================================================
+    // ===== Einheit verlängern / kürzen =====
+    function fmtHMS(sec) {
+      sec = Math.max(0, Math.round(sec));
+      const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+      const p = n => String(n).padStart(2, "0");
+      return h > 0 ? `${h}:${p(m)}:${p(s)}` : `${m}:${p(s)}`;
+    }
+    function parsePaceInput(v) {
+      v = String(v || "").trim().replace(",", ".");
+      if (!v) return NaN;
+      const m = v.match(/^(\d+):(\d{1,2})$/);
+      if (m) return parseInt(m[1], 10) * 60 + parseInt(m[2], 10);
+      const f = parseFloat(v);
+      return isNaN(f) ? NaN : f * 60;
+    }
+    function getExtActivity() {
+      const id = document.getElementById("extActivity").value;
+      return (APP_STATE.activities || []).find(a => String(a.id) === id) || null;
+    }
+    function populateExtendSelector() {
+      const sel = document.getElementById("extActivity");
+      if (!sel) return;
+      const prev = sel.value;
+      const list = (APP_STATE.activities || []).slice(0, 80);
+      if (!list.length) { sel.innerHTML = '<option value="">Keine Einheiten – erst synchronisieren</option>'; renderExtend(); return; }
+      sel.innerHTML = list.map(a => {
+        const km = a.distance ? (a.distance / 1000).toFixed(1).replace(".", ",") + " km" : "";
+        const min = a.moving_time ? Math.round(a.moving_time / 60) + " min" : "";
+        return `<option value="${esc(a.id)}">${esc(String(a.start_date_local || "").slice(0, 10))} · ${esc(a.type || "")} · ${esc(a.name || "Einheit")}${km ? " · " + km : ""}${min ? " · " + min : ""}</option>`;
+      }).join("");
+      if (prev && list.some(a => String(a.id) === prev)) sel.value = prev;
+      renderExtend();
+    }
+    function computeExtend() {
+      const a = getExtActivity();
+      if (!a || !(a.moving_time > 0)) return null;
+      const t0 = a.moving_time, d0 = a.distance || 0;
+      const addMin = parseFloat(document.getElementById("extMin").value);
+      if (isNaN(addMin)) return null;
+      const addSec = addMin * 60;
+      const t1 = t0 + addSec;
+      if (t1 <= 0) return null;
+      const pace0 = d0 > 0 ? t0 / (d0 / 1000) : 0;
+      let paceX = parsePaceInput(document.getElementById("extPace").value);
+      if (isNaN(paceX) || paceX <= 0) paceX = pace0;
+      const dX = paceX > 0 ? (Math.abs(addSec) / paceX) * 1000 * Math.sign(addSec) : 0;
+      const d1 = Math.max(0, d0 + dX);
+      const hr0 = a.average_heartrate || 0;
+      let hrX = parseFloat(document.getElementById("extHr").value);
+      if (isNaN(hrX)) hrX = hr0;
+      // Mischwert aus Bestand und Zusatz (beim Kürzen werden Zusatzminuten herausgerechnet)
+      const mix = (v0, vX) => (v0 * t0 + vX * addSec) / t1;
+      const hr1 = hr0 ? mix(hr0, hrX) : 0;
+      const w0 = a.average_watts || a.icu_average_watts || 0;
+      let wX = parseFloat(document.getElementById("extW").value);
+      if (isNaN(wX)) wX = w0;
+      const w1 = w0 ? mix(w0, wX) : 0;
+      const ratio = t1 / t0;
+      const kcal0 = a.calories || 0, load0 = a.icu_training_load || 0;
+      return {
+        a, addMin, t0, t1, d0, d1,
+        pace0, pace1: d1 > 0 ? t1 / (d1 / 1000) : 0,
+        hr0, hr1, w0, w1,
+        kcal0, kcal1: Math.round(kcal0 * ratio),
+        load0, load1: Math.round(load0 * ratio)
+      };
+    }
+    function renderExtend() {
+      const box = document.getElementById("extResult");
+      if (!box) return;
+      const r = computeExtend();
+      if (!r) { box.innerHTML = '<div class="tiny">Einheit wählen und Minuten eintragen.</div>'; return; }
+      const km = v => v > 0 ? (v / 1000).toFixed(2).replace(".", ",") + " km" : "–";
+      const row = (lbl, a, b) => `<tr><td>${lbl}</td><td>${a}</td><td class="ext-new">${b}</td></tr>`;
+      let rows = row("Zeit", fmtHMS(r.t0), fmtHMS(r.t1));
+      if (r.d0 > 0) rows = row("Distanz", km(r.d0), km(r.d1)) + rows + row("Ø Pace", formatPace(r.pace0), formatPace(r.pace1));
+      if (r.hr0) rows += row("Ø Puls", Math.round(r.hr0) + " bpm", Math.round(r.hr1) + " bpm");
+      if (r.w0) rows += row("Ø Watt", Math.round(r.w0) + " W", Math.round(r.w1) + " W");
+      if (r.kcal0) rows += row("Kalorien", r.kcal0 + " kcal", r.kcal1 + " kcal");
+      if (r.load0) rows += row("Load (TSS)", r.load0, r.load1);
+      box.innerHTML = `<table class="ext-table"><thead><tr><th></th><th>Vorher</th><th>Nachher</th></tr></thead><tbody>${rows}</tbody></table>`;
+      const ph = (id, v) => { const el = document.getElementById(id); if (el && !el.value) el.placeholder = v; };
+      ph("extPace", r.pace0 ? "Ø " + formatPace(r.pace0) : "Ø der Einheit");
+      ph("extHr", r.hr0 ? "Ø " + Math.round(r.hr0) : "Ø der Einheit");
+      ph("extW", r.w0 ? "Ø " + Math.round(r.w0) : "Ø der Einheit");
+    }
+    function extendAsText() {
+      const r = computeExtend();
+      if (!r) return "";
+      const km = v => v > 0 ? (v / 1000).toFixed(2).replace(".", ",") + " km" : "-";
+      const L = [`${r.a.name || "Einheit"} (${String(r.a.start_date_local || "").slice(0, 10)}) ${r.addMin >= 0 ? "+" : ""}${r.addMin} Min`];
+      if (r.d0 > 0) L.push(`Distanz: ${km(r.d0)} -> ${km(r.d1)}`);
+      L.push(`Zeit: ${fmtHMS(r.t0)} -> ${fmtHMS(r.t1)}`);
+      if (r.d0 > 0) L.push(`Ø Pace: ${formatPace(r.pace0)} -> ${formatPace(r.pace1)}`);
+      if (r.hr0) L.push(`Ø Puls: ${Math.round(r.hr0)} -> ${Math.round(r.hr1)} bpm`);
+      if (r.w0) L.push(`Ø Watt: ${Math.round(r.w0)} -> ${Math.round(r.w1)} W`);
+      if (r.kcal0) L.push(`Kalorien: ${r.kcal0} -> ${r.kcal1} kcal`);
+      if (r.load0) L.push(`Load: ${r.load0} -> ${r.load1} TSS`);
+      return L.join("\n");
+    }
+    async function copyText(t) {
+      try { await navigator.clipboard.writeText(t); return true; } catch {}
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = t; ta.style.position = "fixed"; ta.style.opacity = "0";
+        document.body.appendChild(ta); ta.select();
+        const ok = document.execCommand("copy"); ta.remove(); return ok;
+      } catch { return false; }
+    }
+    async function applyExtend() {
+      const r = computeExtend();
+      if (!r) { showBanner("extBanner", "err", "Bitte Einheit und Minuten angeben."); return; }
+      const payload = {};
+      if (r.kcal0) payload.calories = r.kcal1;
+      if (r.load0) payload.icu_training_load = r.load1;
+      if (document.getElementById("extNote").checked) {
+        const note = `Verlängert um ${r.addMin} Min (Neuberechnung im Subintervals-Tool)`;
+        payload.description = ((r.a.description || "") + (r.a.description ? "\n" : "") + note).trim();
+      }
+      if (!Object.keys(payload).length) { showBanner("extBanner", "err", "Für diese Einheit gibt es keine Kalorien oder Load zum Übernehmen."); return; }
+      const sum = Object.entries(payload).map(([k, v]) => `${k}: ${v}`).join("\n");
+      if (!confirm(`Einheit ${r.a.id} in Intervals.icu überschreiben?\n\n${sum}`)) return;
+      showBanner("extBanner", "", "Sende Update ...");
+      try {
+        const res = await fetch(`https://intervals.icu/api/v1/activity/${r.a.id}`, {
+          method: "PUT",
+          headers: { "Authorization": getAuth(), "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        showBanner("extBanner", "ok", "&gt;&gt; ERFOLG: Kalorien/Load übernommen. Distanz und Zeit bitte bei Bedarf von Hand eintragen.");
+        syncAllData();
+      } catch (err) {
+        const fe = friendlyError(err);
+        showBanner("extBanner", "err", "Fehler: " + esc(fe.text));
+      }
+    }
+
     async function executeActivityPatch() {
       const id = document.getElementById("patchId").value.trim();
       const name = document.getElementById("patchName").value.trim();
@@ -7596,6 +7789,18 @@
         e.target.value = "";
       });
 
+      document.getElementById("extActivity").addEventListener("change", () => {
+        ["extPace", "extHr", "extW"].forEach(id => { const el = document.getElementById(id); el.value = ""; el.placeholder = ""; });
+        renderExtend();
+      });
+      ["extMin", "extPace", "extHr", "extW"].forEach(id => document.getElementById(id).addEventListener("input", renderExtend));
+      document.getElementById("btnExtCopy").addEventListener("click", async () => {
+        const t = extendAsText();
+        if (!t) { showBanner("extBanner", "err", "Nichts zu kopieren."); return; }
+        const ok = await copyText(t);
+        showBanner("extBanner", ok ? "ok" : "err", ok ? "&gt;&gt; Ergebnis kopiert." : "Kopieren nicht möglich – bitte Text von Hand markieren.");
+      });
+      document.getElementById("btnExtApply").addEventListener("click", applyExtend);
       document.getElementById("btnWelcomeLogin").addEventListener("click", focusLogin);
       const updWelcome = () => { document.getElementById("dashWelcome").style.display = (getAthleteId() && document.getElementById("cfgApiKey").value.trim()) ? "none" : "block"; };
       ["cfgAthleteId", "cfgApiKey"].forEach(id => document.getElementById(id).addEventListener("input", updWelcome));
