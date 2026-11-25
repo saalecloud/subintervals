@@ -2,6 +2,9 @@
 
 Bei jeder Überarbeitung wird die Versionsnummer erhöht (Anzeige im Kopf der Seite und im Browser-Tab).
 
+## v6.3 – 2026-11-25
+- Verlängern: Kalorien der Zusatzminuten standardmäßig nach Laufformel (Tempo, Gewicht) statt proportional zum Gerätewert; Umschalter und Gegenprobe mit beiden Werten, Warnhinweis bei großer Abweichung
+
 ## v6.2 – 2026-11-25
 - Tools 3 und 4 zusammengeführt: „Einheit korrigieren & anpassen“ mit gemeinsamer Einheiten-Auswahl (A: verlängern/kürzen, B: Werte korrigieren)
 - Verlängern/Kürzen legt jetzt eine neue Einheit mit den berechneten Werten (Distanz, Zeit, Puls, Kalorien) in Intervals.icu an; optional wird das Original gelöscht. Grund: Distanz und Zeit lassen sich beim aufgezeichneten Original nicht überschreiben

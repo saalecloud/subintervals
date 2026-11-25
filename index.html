@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Subintervals &middot; Trainingscockpit v6.2</title>
+  <title>Subintervals &middot; Trainingscockpit v6.3</title>
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="theme-color" content="#070a0f">
   <script>
@@ -1434,7 +1434,7 @@
     </div>
     <!-- TOP HEADER -->
     <div class="top-bar">
-      <h1 class="brand-title">Subintervals <span class="ver">v6.2</span></h1>
+      <h1 class="brand-title">Subintervals <span class="ver">v6.3</span></h1>
       <div class="top-actions">
         <button type="button" class="theme-btn" id="btnTheme" title="Zwischen hell und dunkel wechseln" aria-label="Design wechseln">☀</button>
         <button type="button" class="sync-btn" id="btnGlobalSync" aria-label="Alle Daten synchronisieren"><span class="ico">↻</span> Sync</button>
@@ -2105,6 +2105,13 @@
                   <label for="extW">Watt der Zusatzminuten</label>
                   <input type="number" id="extW" placeholder="Ø der Einheit">
                 </div>
+                <div style="grid-column:1/-1">
+                  <label for="extKcalMode">Kalorien der Zusatzminuten</label>
+                  <select id="extKcalMode">
+                    <option value="est">Schätzung nach Tempo und Gewicht (Lauf/Gehen)</option>
+                    <option value="prop">Proportional zu den Kalorien der Einheit</option>
+                  </select>
+                </div>
               </div>
               <div id="extResult"></div>
               <button type="button" class="btn cyan" id="btnExtCreate">Angepasste Einheit in Intervals.icu anlegen</button>
@@ -2626,7 +2633,7 @@
       }
     }
 
-    const APP_VERSION = "6.2";
+    const APP_VERSION = "6.3";
     const CACHE_KEY = "subintervalsCacheV1";
 
     function renderToday() {
@@ -7444,11 +7451,25 @@
       const w1 = w0 ? mix(w0, wX) : 0;
       const ratio = t1 / t0;
       const kcal0 = a.calories || 0, load0 = a.icu_training_load || 0;
+      // Kalorien der Zusatzminuten: proportional (Gerätewert) und Schätzung (ACSM-Laufformel)
+      const propKcal = kcal0 * (t1 - t0) / t0;
+      let estKcal = null, estPerMin = null;
+      const cw = currentWeight().kg || (latestWeight() && latestWeight().kg) || null;
+      if (/run|walk|hike/i.test(a.type || "") && paceX > 0 && cw) {
+        const vmin = 1000 / paceX * 60;
+        estPerMin = (0.2 * vmin + 3.5) * cw * 5 / 1000;
+        estKcal = estPerMin * addMin;
+      }
+      const mode = (document.getElementById("extKcalMode") || {}).value || "est";
+      const useEst = mode === "est" && estKcal !== null;
+      const kcalDelta = useEst ? estKcal : propKcal;
       return {
+        propKcal, estKcal, estPerMin, useEst, weight: cw,
+        kcal1c: Math.round(kcal0 + kcalDelta),
         a, addMin, t0, t1, d0, d1,
         pace0, pace1: d1 > 0 ? t1 / (d1 / 1000) : 0,
         hr0, hr1, w0, w1,
-        kcal0, kcal1: Math.round(kcal0 * ratio),
+        kcal0, kcal1: Math.round(kcal0 + kcalDelta),
         load0, load1: Math.round(load0 * ratio)
       };
     }
@@ -7465,7 +7486,15 @@
       if (r.w0) rows += row("Ø Watt", Math.round(r.w0) + " W", Math.round(r.w1) + " W");
       if (r.kcal0) rows += row("Kalorien", r.kcal0 + " kcal", r.kcal1 + " kcal");
       if (r.load0) rows += row("Load (TSS)", r.load0, r.load1);
-      box.innerHTML = `<table class="ext-table"><thead><tr><th></th><th>Vorher</th><th>Nachher</th></tr></thead><tbody>${rows}</tbody></table>`;
+      let hint = "";
+      if (r.kcal0 && Math.abs(r.addMin) > 0) {
+        const f = v => (v >= 0 ? "+" : "") + Math.round(v);
+        const perMinProp = Math.abs(r.propKcal / r.addMin);
+        hint = `<div class="tiny" style="margin:6px 0 2px">Zusatzminuten: <b>${f(r.useEst ? r.estKcal : r.propKcal)} kcal</b> (${r.useEst ? "Schätzung" : "proportional"}). Gegenprobe: proportional ${f(r.propKcal)} kcal (${perMinProp.toFixed(1).replace(".", ",")} kcal/min)` +
+          (r.estKcal !== null ? `, Laufformel ${f(r.estKcal)} kcal (${r.estPerMin.toFixed(1).replace(".", ",")} kcal/min bei ${Math.round(r.weight)} kg).` : ". Für eine Schätzung fehlen Gewicht oder Lauf-Tempo.") +
+          (r.estKcal !== null && r.propKcal > r.estKcal * 1.25 ? " Der Gerätewert liegt deutlich über der Formel – die Kalorien der Einheit sind vermutlich zu hoch." : "") + `</div>`;
+      }
+      box.innerHTML = `<table class="ext-table"><thead><tr><th></th><th>Vorher</th><th>Nachher</th></tr></thead><tbody>${rows}</tbody></table>` + hint;
       const ph = (id, v) => { const el = document.getElementById(id); if (el && !el.value) el.placeholder = v; };
       ph("extPace", r.pace0 ? "Ø " + formatPace(r.pace0) : "Ø der Einheit");
       ph("extHr", r.hr0 ? "Ø " + Math.round(r.hr0) : "Ø der Einheit");
@@ -7836,6 +7865,7 @@
         renderExtend();
       });
       ["extMin", "extPace", "extHr", "extW"].forEach(id => document.getElementById(id).addEventListener("input", renderExtend));
+      document.getElementById("extKcalMode").addEventListener("change", renderExtend);
       document.getElementById("btnExtCopy").addEventListener("click", async () => {
         const t = extendAsText();
         if (!t) { showBanner("extBanner", "err", "Nichts zu kopieren."); return; }
